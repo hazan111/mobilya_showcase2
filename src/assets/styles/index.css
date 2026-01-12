@@ -1,0 +1,191 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #ffffff;
+    color: #1a1a1a;
+    cursor: none;
+}
+
+.font-serif {
+    font-family: 'Cormorant Garamond', serif;
+}
+
+/* Custom Cursor - Red to match brand */
+#cursor-dot, #cursor-outline {
+    position: fixed;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+#cursor-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #dc2626; /* Red-600 */
+}
+
+#cursor-outline {
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(220, 38, 38, 0.5);
+    transition: width 0.2s, height 0.2s, background-color 0.2s;
+}
+
+body:hover #cursor-outline {
+    width: 50px;
+    height: 50px;
+    background-color: rgba(220, 38, 38, 0.05);
+}
+
+/* Scroll Progress - Red Gradient */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #dc2626, #991b1b); /* Red to Dark Red */
+    z-index: 100;
+    width: 0%;
+    transition: width 0.1s;
+}
+
+/* Animations */
+.reveal-up {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 1s cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+.reveal-up.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.reveal-scale {
+    opacity: 0;
+    transform: scale(0.95);
+    transition: all 1.2s cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+.reveal-scale.active {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Magnetic Button Base */
+.magnetic-wrap {
+    display: inline-block;
+    position: relative;
+}
+
+.magnetic-area {
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    z-index: 10;
+}
+
+/* Shine Effect */
+.shine-hover {
+    position: relative;
+    overflow: hidden;
+}
+
+.shine-hover::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-25deg);
+    transition: none;
+    z-index: 2;
+}
+
+.shine-hover:hover::before {
+    left: 150%;
+    transition: 0.7s ease-in-out;
+}
+
+/* Glass Morphism */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(220, 38, 38, 0.1);
+}
+
+/* Image Hover Parallax */
+.img-container {
+    overflow: hidden;
+}
+
+.img-container img {
+    transition: transform 0.7s cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+.group:hover .img-container img {
+    transform: scale(1.1);
+}
+
+/* Discount Badge Shape */
+.price-pill {
+    clip-path: polygon(10% 0, 100% 0, 100% 100%, 10% 100%, 0% 50%);
+}
+
+/* Slow spin animation */
+@keyframes spin-slow {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin-slow {
+    animation: spin-slow 8s linear infinite;
+}
+
+/* Dropdown slide from left animation */
+.dropdown-slide-right {
+    animation: slideInRight 0.3s cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+/* Mega Menu Fade Up Animation */
+.dropdown-fade-up {
+    animation: fadeUp 0.3s cubic-bezier(0.2, 1, 0.3, 1);
+    transform-origin: top center;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translate(-50%, 10px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}

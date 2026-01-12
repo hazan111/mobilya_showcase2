@@ -1,0 +1,53 @@
+import React from 'react';
+import { Award, Building2, MapPin, Briefcase } from 'lucide-react';
+import { COMPANY_STATS } from '../../utils/constants';
+import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
+
+function AboutSection() {
+  const revealRef1 = useIntersectionObserver();
+  const revealRef2 = useIntersectionObserver();
+
+  const stats = [
+    { icon: Award, value: COMPANY_STATS.years, label: 'Yıl Tecrübe' },
+    { icon: Building2, value: COMPANY_STATS.branches, label: 'Şube' },
+    { icon: MapPin, value: COMPANY_STATS.cities, label: 'Şehir' },
+    { icon: Briefcase, value: COMPANY_STATS.projects + '+', label: 'Kurumsal Proje' },
+  ];
+
+  return (
+    <section className="py-12 md:py-16 px-4 bg-white border-t border-stone-100">
+      <div className="max-w-6xl mx-auto">
+        <div
+          ref={revealRef1}
+          className="text-center mb-10 reveal-up"
+        >
+          <h2 className="text-3xl md:text-4xl font-serif mb-3 text-stone-900">
+            Kurumsal Güven
+          </h2>
+          <p className="text-stone-600 max-w-2xl mx-auto text-base">
+            Sektördeki tecrübemiz ve operasyonel gücümüzle kurumsal mobilya çözümlerinde güvenilir ortağınızız.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          {stats.map((stat, index) => (
+            <div
+              key={index}
+              ref={index === 0 ? revealRef2 : null}
+              className="text-center p-6 bg-stone-50 rounded-xl border border-stone-200 hover:border-red-200 transition-colors reveal-up"
+              style={{ transitionDelay: `${index * 100}ms` }}
+            >
+              <div className="w-12 h-12 bg-white border border-stone-100 rounded-full flex items-center justify-center text-red-600 mx-auto mb-3 shadow-sm">
+                <stat.icon className="w-6 h-6" />
+              </div>
+              <div className="text-3xl font-bold text-stone-900 mb-1">{stat.value}</div>
+              <p className="text-sm font-medium text-stone-500">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default AboutSection;
