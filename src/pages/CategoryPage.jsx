@@ -1,17 +1,38 @@
 import React, { useState } from 'react';
-import { Filter, ChevronDown, SlidersHorizontal } from 'lucide-react';
-import ProductCard from '../components/sections/ProductsSection'; // Reusing ProductCard logic but will adapt
-import { PRODUCTS } from '../utils/constants';
+import { Filter, ChevronRight, ArrowRight, ShoppingCart } from 'lucide-react';
+import { PRODUCTS, CATEGORIES } from '../utils/constants';
 
 function CategoryPage() {
   const [showFilters, setShowFilters] = useState(false);
+  const [sortBy, setSortBy] = useState('recommended');
+  const [stockFilter, setStockFilter] = useState('all');
 
-  // Mock category data
-  const category = {
-    title: 'Ofis Mobilyaları',
-    description: 'Ergonomik ve şık tasarımlarla ofisinizin verimliliğini artırın. Çalışma masaları, koltuklar ve depolama çözümleri.',
-    count: 124
-  };
+  // Get category ID from URL
+  const categoryId = parseInt(window.location.pathname.split('/category/')[1] || '1');
+  const category = CATEGORIES.find(c => c.id === categoryId) || CATEGORIES[0];
+  
+  // Filter products by category
+  const categoryProducts = PRODUCTS.filter(p => p.category === category.title);
+  
+  // Apply stock filter
+  const filteredProducts = stockFilter === 'inStock' 
+    ? categoryProducts.filter(p => p.inStock)
+    : categoryProducts;
+
+  // Sort products
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    if (sortBy === 'price-asc') {
+      const priceA = parseFloat(a.price.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+      const priceB = parseFloat(b.price.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+      return priceA - priceB;
+    }
+    if (sortBy === 'price-desc') {
+      const priceA = parseFloat(a.price.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+      const priceB = parseFloat(b.price.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+      return priceB - priceA;
+    }
+    return 0;
+  });
 
   return (
     <div className="pt-24 pb-12 px-4 md:px-8 bg-white min-h-screen">
@@ -21,16 +42,22 @@ function CategoryPage() {
         <div className="mb-8 border-b border-stone-100 pb-6">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-              <div className="text-sm text-stone-500 mb-2">Ana Sayfa / Kategoriler / Ofis Mobilyaları</div>
+              <nav className="flex items-center text-sm text-stone-500 mb-4 overflow-x-auto whitespace-nowrap">
+                <a href="/" className="hover:text-stone-900 transition-colors">Ana Sayfa</a>
+                <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
+                <a href="/products" className="hover:text-stone-900 transition-colors">Kategoriler</a>
+                <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
+                <span className="text-stone-900 font-medium">{category.title}</span>
+              </nav>
               <h1 className="text-3xl md:text-4xl font-serif text-stone-900 mb-2">
                 {category.title}
               </h1>
               <p className="text-stone-600 max-w-2xl text-sm md:text-base">
-                {category.description}
+                {category.subtitle}
               </p>
             </div>
             <div className="text-stone-500 text-sm font-medium">
-              {category.count} Ürün Listeleniyor
+              {sortedProducts.length} Ürün Listeleniyor
             </div>
           </div>
         </div>
@@ -80,7 +107,7 @@ function CategoryPage() {
           {/* Product Grid Area */}
           <div className="flex-1">
             {/* Toolbar */}
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-stone-100 lg:hidden">
+              <div className="flex items-center justify-between mb-6 pb-4 border-b border-stone-100 lg:hidden">
               <button 
                 onClick={() => setShowFilters(!showFilters)}
                 className="flex items-center gap-2 text-sm font-medium text-stone-700 border border-stone-200 px-4 py-2 rounded-lg hover:border-red-500 hover:text-red-600 transition-colors"
@@ -88,43 +115,73 @@ function CategoryPage() {
                 <Filter className="w-4 h-4" /> Filtrele
               </button>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-stone-500">Sırala:</span>
-                <select className="text-sm font-medium text-stone-900 bg-transparent border-none focus:ring-0 cursor-pointer">
-                  <option>Önerilen</option>
-                  <option>En Yeni</option>
-                  <option>Fiyat: Düşükten Yükseğe</option>
-                  <option>Fiyat: Yüksekten Düşüğe</option>
-                </select>
+                <label className="flex items-center gap-1 text-xs cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    className="rounded text-red-600 focus:ring-red-500 border-stone-300"
+                    checked={stockFilter === 'inStock'}
+                    onChange={(e) => setStockFilter(e.target.checked ? 'inStock' : 'all')}
+                  />
+                  <span className="text-stone-700">Stokta</span>
+                </label>
+                <div className="flex items-center gap-1">
+                  <span className="text-xs text-stone-500">Sırala:</span>
+                  <select 
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="text-xs font-medium text-stone-900 bg-transparent border-none focus:ring-0 cursor-pointer"
+                  >
+                    <option value="recommended">Önerilen</option>
+                    <option value="newest">En Yeni</option>
+                    <option value="price-asc">Fiyat ↑</option>
+                    <option value="price-desc">Fiyat ↓</option>
+                  </select>
+                </div>
               </div>
             </div>
 
             {/* Desktop Toolbar */}
-            <div className="hidden lg:flex items-center justify-end mb-6">
-               <div className="flex items-center gap-2">
+            <div className="hidden lg:flex items-center justify-between mb-6">
+              <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
+                <input 
+                  type="checkbox" 
+                  className="rounded text-red-600 focus:ring-red-500 border-stone-300"
+                  checked={stockFilter === 'inStock'}
+                  onChange={(e) => setStockFilter(e.target.checked ? 'inStock' : 'all')}
+                />
+                <span className="text-stone-700">Sadece Stoktakiler</span>
+              </label>
+              <div className="flex items-center gap-2">
                 <span className="text-sm text-stone-500">Sırala:</span>
-                <select className="text-sm font-medium text-stone-900 border-stone-200 rounded-lg focus:border-red-500 focus:ring-0 cursor-pointer">
-                  <option>Önerilen</option>
-                  <option>En Yeni</option>
-                  <option>Fiyat: Düşükten Yükseğe</option>
-                  <option>Fiyat: Yüksekten Düşüğe</option>
+                <select 
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="text-sm font-medium text-stone-900 border-stone-200 rounded-lg focus:border-red-500 focus:ring-0 cursor-pointer"
+                >
+                  <option value="recommended">Önerilen</option>
+                  <option value="newest">En Yeni</option>
+                  <option value="price-asc">Fiyat: Düşükten Yükseğe</option>
+                  <option value="price-desc">Fiyat: Yüksekten Düşüğe</option>
                 </select>
               </div>
             </div>
 
             {/* Products */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Using existing products repeated for demo */}
-              {[...PRODUCTS, ...PRODUCTS, ...PRODUCTS].map((product, index) => (
-                <CategoryProductCard key={`${product.id}-${index}`} product={product} />
-              ))}
-            </div>
+            {sortedProducts.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {sortedProducts.map((product) => (
+                  <CategoryProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16">
+                <p className="text-stone-500 text-lg mb-4">Bu kategoride ürün bulunmamaktadır.</p>
+                <a href="/products" className="text-red-600 font-semibold hover:text-red-700">
+                  Tüm Ürünleri Gör →
+                </a>
+              </div>
+            )}
 
-            {/* Pagination */}
-            <div className="mt-12 flex justify-center">
-              <button className="px-8 py-3 bg-stone-100 text-stone-900 font-medium rounded-lg hover:bg-stone-200 transition-colors">
-                Daha Fazla Göster
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -135,8 +192,8 @@ function CategoryPage() {
 // Simplified Card for Category Page
 function CategoryProductCard({ product }) {
   return (
-    <div className="group bg-white rounded-xl overflow-hidden border border-stone-200 hover:border-red-300 hover:shadow-lg transition-all duration-300">
-      <div className="relative aspect-[4/3] overflow-hidden bg-stone-100">
+    <div className="group bg-white rounded-xl overflow-hidden border border-stone-200 hover:border-red-300 hover:shadow-lg transition-all duration-300 flex flex-col">
+      <a href={`/product/${product.id}`} className="relative aspect-[4/3] overflow-hidden bg-stone-100 block">
         <img
           src={product.image}
           alt={product.name}
@@ -149,17 +206,39 @@ function CategoryProductCard({ product }) {
             </div>
           </div>
         )}
-      </div>
-      <div className="p-4">
-        <h3 className="font-serif text-lg font-medium text-stone-900 mb-1 group-hover:text-red-600 transition-colors truncate">
-          {product.name}
-        </h3>
-        <p className="text-xs text-stone-500 mb-3 line-clamp-1">{product.features[0]}</p>
-        <div className="flex items-center justify-between">
-          <span className="font-bold text-stone-900">{product.price}</span>
-          <button className="text-xs font-semibold text-red-600 border border-red-100 px-3 py-1.5 rounded hover:bg-red-50 transition-colors">
-            İncele
-          </button>
+      </a>
+      <div className="p-4 flex flex-col flex-1">
+        <a href={`/product/${product.id}`}>
+          <h3 className="font-serif text-lg font-medium text-stone-900 mb-1 group-hover:text-red-600 transition-colors truncate">
+            {product.name}
+          </h3>
+        </a>
+        <p className="text-xs text-stone-500 mb-3 line-clamp-1">{product.features && product.features[0]}</p>
+        <div className="mt-auto flex items-center justify-between gap-3">
+          <div>
+            <div className="font-bold text-red-600">{product.price}</div>
+            {product.originalPrice && (
+              <div className="text-xs text-stone-400 line-through">{product.originalPrice}</div>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // Sepete ekle işlevi
+              }}
+              className="text-xs font-semibold text-stone-900 bg-stone-100 hover:bg-stone-200 px-3 py-1.5 rounded transition-colors flex items-center gap-1"
+            >
+              <ShoppingCart className="w-3 h-3" />
+            </button>
+            <a 
+              href={`/product/${product.id}`}
+              className="text-xs font-semibold text-red-600 border border-red-100 px-3 py-1.5 rounded hover:bg-red-50 transition-colors"
+            >
+              Detay
+            </a>
+          </div>
         </div>
       </div>
     </div>

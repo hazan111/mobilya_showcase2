@@ -22,7 +22,7 @@ function ProductsSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-          {PRODUCTS.map((product) => (
+          {PRODUCTS.slice(0, 6).map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
@@ -40,7 +40,7 @@ function ProductCard({ product }) {
       className="group bg-white rounded-xl overflow-hidden border border-stone-200 hover:border-red-300 hover:shadow-xl transition-all duration-300 reveal-up"
       style={{ transitionDelay: product.delay }}
     >
-      <div className="relative aspect-[3/4] overflow-hidden bg-stone-100">
+      <a href={`/product/${product.id}`} className="relative aspect-[3/4] overflow-hidden bg-stone-100 block">
         <img
           src={product.image}
           alt={product.name}
@@ -59,18 +59,27 @@ function ProductCard({ product }) {
         {/* Quick Action Overlay */}
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 flex items-end">
           <div className="w-full p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-            <button className="w-full bg-red-600 text-white font-semibold py-2.5 px-4 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2 shadow-lg">
+            <button 
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.location.href = `/product/${product.id}`;
+              }}
+              className="w-full bg-red-600 text-white font-semibold py-2.5 px-4 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2 shadow-lg"
+            >
               <ShoppingCart className="w-4 h-4" />
-              Teklif Al
+              Sepete Ekle
             </button>
           </div>
         </div>
-      </div>
+      </a>
 
       <div className="p-5">
-        <h3 className="font-serif text-xl font-semibold text-stone-900 mb-3 group-hover:text-red-600 transition-colors">
-          {product.name}
-        </h3>
+        <a href={`/product/${product.id}`}>
+          <h3 className="font-serif text-xl font-semibold text-stone-900 mb-3 group-hover:text-red-600 transition-colors">
+            {product.name}
+          </h3>
+        </a>
         
         <div className="space-y-2 mb-4">
           {product.features.map((feature, index) => (
@@ -82,11 +91,18 @@ function ProductCard({ product }) {
         </div>
 
         <div className="flex items-center justify-between pt-4 border-t border-stone-100">
-          <div className="text-lg font-bold text-stone-900">
-            {product.price}
+          <div>
+            <div className="text-lg font-bold text-red-600">
+              {product.price}
+            </div>
+            {product.originalPrice && (
+              <div className="text-sm text-stone-400 line-through">
+                {product.originalPrice}
+              </div>
+            )}
           </div>
           <a
-            href="#"
+            href={`/product/${product.id}`}
             className="inline-flex items-center gap-1.5 text-red-600 font-semibold text-sm hover:gap-2 transition-all"
           >
             Detay

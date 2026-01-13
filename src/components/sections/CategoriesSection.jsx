@@ -38,7 +38,7 @@ function CategoryCard({ category }) {
 
   return (
     <a
-      href="#"
+      href={`/category/${category.id}`}
       ref={revealRef}
       className="group relative block overflow-hidden rounded-xl bg-white border border-stone-200 hover:border-red-300 hover:shadow-lg transition-all duration-300 reveal-up"
       style={{ transitionDelay: category.delay }}

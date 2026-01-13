@@ -1,42 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   CheckCircle, Truck, Wrench, Shield, ArrowRight, 
   ChevronRight, Star, ShoppingCart, MessageSquare 
 } from 'lucide-react';
-import ProductCard from '../components/sections/ProductsSection'; // Reusing ProductCard structure logic
 import { PRODUCTS } from '../utils/constants';
 
 function ProductDetailPage() {
-  // Mock product data
-  const product = {
-    id: 1,
-    name: 'Ergonomic Executive Office Suite',
-    price: '44.990₺',
-    originalPrice: '52.000₺',
-    description: 'Modern ofisler için tasarlanmış, ergonomi ve şıklığı birleştiren üst düzey yönetici takımı. Uzun çalışma saatleri için optimize edilmiştir.',
-    images: [
-      'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1600',
-      'https://images.unsplash.com/photo-1497215842964-222b430dc094?q=80&w=800',
-      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=800',
-    ],
-    specs: [
-      { label: 'Masa Ölçüleri', value: '220 x 100 x 75 cm' },
-      { label: 'Malzeme', value: 'Doğal Ahşap Kaplama, Metal Ayak' },
-      { label: 'Renk Seçenekleri', value: 'Ceviz, Meşe, Antrasit' },
-      { label: 'Kullanım Alanı', value: 'Yönetici Odası, Ofis' },
-      { label: 'Garanti', value: '2 Yıl Kurumsal Garanti' },
-    ],
-    features: [
-      'Ücretsiz Teslimat ve Kurulum',
-      'Özel Ölçü Seçeneği',
-      'Kablo Yönetim Sistemi',
-      'Leke Tutmaz Yüzey'
-    ],
-    inStock: true,
-    deliveryTime: '3-5 İş Günü'
-  };
-
   const [activeImage, setActiveImage] = useState(0);
+  
+  // Get product ID from URL
+  const productId = parseInt(window.location.pathname.split('/product/')[1] || '1');
+  const product = PRODUCTS.find(p => p.id === productId) || PRODUCTS[0];
+
+  // Reset active image when product changes
+  useEffect(() => {
+    setActiveImage(0);
+  }, [productId]);
 
   return (
     <div className="pt-24 pb-12 px-4 md:px-8 bg-white min-h-screen">
@@ -46,7 +25,7 @@ function ProductDetailPage() {
         <nav className="flex items-center text-sm text-stone-500 mb-6 overflow-x-auto whitespace-nowrap">
           <a href="/" className="hover:text-stone-900 transition-colors">Ana Sayfa</a>
           <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
-          <a href="/category" className="hover:text-stone-900 transition-colors">Yönetici Mobilyaları</a>
+          <a href="/products" className="hover:text-stone-900 transition-colors">{product.category || 'Ürünler'}</a>
           <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
           <span className="text-stone-900 font-medium">{product.name}</span>
         </nav>
@@ -56,7 +35,7 @@ function ProductDetailPage() {
           <div className="lg:col-span-7 space-y-4">
             <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-stone-100 shadow-sm border border-stone-100">
               <img 
-                src={product.images[activeImage]} 
+                src={product.images && product.images.length > 0 ? product.images[activeImage] : product.image} 
                 alt={product.name} 
                 className="w-full h-full object-cover"
               />
@@ -66,19 +45,21 @@ function ProductDetailPage() {
                 </div>
               )}
             </div>
-            <div className="grid grid-cols-4 gap-4">
-              {product.images.map((img, idx) => (
-                <button 
-                  key={idx}
-                  onClick={() => setActiveImage(idx)}
-                  className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
-                    activeImage === idx ? 'border-red-600 ring-2 ring-red-100' : 'border-transparent hover:border-stone-300'
-                  }`}
-                >
-                  <img src={img} alt="" className="w-full h-full object-cover" />
-                </button>
-              ))}
-            </div>
+            {product.images && product.images.length > 1 && (
+              <div className="grid grid-cols-4 gap-4">
+                {product.images.map((img, idx) => (
+                  <button 
+                    key={idx}
+                    onClick={() => setActiveImage(idx)}
+                    className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+                      activeImage === idx ? 'border-red-600 ring-2 ring-red-100' : 'border-transparent hover:border-stone-300'
+                    }`}
+                  >
+                    <img src={img} alt="" className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Right: Product Info & Purchase Block */}
@@ -103,10 +84,22 @@ function ProductDetailPage() {
 
               {/* Price Block */}
               <div className="bg-stone-50 rounded-xl p-6 border border-stone-200">
-                <div className="flex items-end gap-3 mb-6">
+                <div className="flex items-end gap-3 mb-6 flex-wrap">
                   <span className="text-3xl font-bold text-red-600">{product.price}</span>
                   {product.originalPrice && (
-                    <span className="text-lg text-stone-400 line-through mb-1">{product.originalPrice}</span>
+                    <>
+                      <span className="text-lg text-stone-400 line-through mb-1">{product.originalPrice}</span>
+                      <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded font-semibold mb-1">
+                        {(() => {
+                          const priceNum = parseFloat(product.price.replace(/[^\d,]/g, '').replace(',', '.'));
+                          const originalNum = parseFloat(product.originalPrice.replace(/[^\d,]/g, '').replace(',', '.'));
+                          if (priceNum && originalNum && originalNum > priceNum) {
+                            return Math.round((1 - priceNum / originalNum) * 100) + '% İndirim';
+                          }
+                          return '';
+                        })()}
+                      </span>
+                    </>
                   )}
                 </div>
 
@@ -117,14 +110,14 @@ function ProductDetailPage() {
                   </button>
                   <button className="w-full bg-white text-stone-900 font-semibold py-3.5 px-6 rounded-lg border border-stone-300 hover:bg-stone-50 transition-colors flex items-center justify-center gap-2">
                     <MessageSquare className="w-5 h-5" />
-                    Teklif Al / Proje Danışmanı
+                    Proje Danışmanı
                   </button>
                 </div>
 
                 <div className="space-y-3 pt-4 border-t border-stone-200">
                   <div className="flex items-center gap-3 text-sm text-stone-700">
                     <Truck className="w-4 h-4 text-green-600 flex-shrink-0" />
-                    <span><span className="font-semibold">Teslimat:</span> {product.deliveryTime} (İstanbul içi)</span>
+                    <span><span className="font-semibold">Teslimat:</span> {product.deliveryTime || '3-5 İş Günü'} (İstanbul içi)</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm text-stone-700">
                     <Wrench className="w-4 h-4 text-stone-400 flex-shrink-0" />
@@ -139,7 +132,7 @@ function ProductDetailPage() {
 
               {/* Key Features List */}
               <ul className="space-y-2">
-                {product.features.map((feature, idx) => (
+                {(product.detailedFeatures || product.features || []).map((feature, idx) => (
                   <li key={idx} className="flex items-center gap-2 text-sm text-stone-600">
                     <CheckCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
                     {feature}
@@ -154,18 +147,24 @@ function ProductDetailPage() {
         <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 mb-16 border-t border-stone-100 pt-12">
           <div className="lg:col-span-8">
             <h2 className="text-2xl font-serif font-semibold text-stone-900 mb-6">Teknik Özellikler</h2>
-            <div className="bg-white rounded-xl border border-stone-200 overflow-hidden">
-              <table className="w-full text-sm text-left">
-                <tbody>
-                  {product.specs.map((spec, idx) => (
-                    <tr key={idx} className="border-b border-stone-100 last:border-0 hover:bg-stone-50 transition-colors">
-                      <th className="py-4 px-6 font-medium text-stone-900 w-1/3 bg-stone-50/50">{spec.label}</th>
-                      <td className="py-4 px-6 text-stone-600">{spec.value}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            {product.specs && product.specs.length > 0 ? (
+              <div className="bg-white rounded-xl border border-stone-200 overflow-hidden">
+                <table className="w-full text-sm text-left">
+                  <tbody>
+                    {product.specs.map((spec, idx) => (
+                      <tr key={idx} className="border-b border-stone-100 last:border-0 hover:bg-stone-50 transition-colors">
+                        <th className="py-4 px-6 font-medium text-stone-900 w-1/3 bg-stone-50/50">{spec.label}</th>
+                        <td className="py-4 px-6 text-stone-600">{spec.value}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="bg-stone-50 rounded-xl p-6 border border-stone-200 text-stone-600 text-sm">
+                Teknik özellikler yakında eklenecektir.
+              </div>
+            )}
             
             <div className="mt-8 bg-blue-50 rounded-xl p-6 border border-blue-100">
               <h3 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
@@ -214,9 +213,12 @@ function ProductDetailPage() {
             </a>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Reusing product cards with minor tweaks would go here */}
-            {PRODUCTS.slice(0, 4).map((p, i) => (
-              <div key={i} className="group bg-white rounded-xl overflow-hidden border border-stone-200 hover:border-red-300 hover:shadow-lg transition-all duration-300">
+            {PRODUCTS.filter(p => p.id !== product.id).slice(0, 4).map((p) => (
+              <a 
+                key={p.id}
+                href={`/product/${p.id}`}
+                className="group bg-white rounded-xl overflow-hidden border border-stone-200 hover:border-red-300 hover:shadow-lg transition-all duration-300 block"
+              >
                 <div className="relative aspect-[4/3] bg-stone-100 overflow-hidden">
                   <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
                 </div>
@@ -224,10 +226,10 @@ function ProductDetailPage() {
                   <h3 className="font-serif font-medium text-stone-900 mb-1 truncate">{p.name}</h3>
                   <div className="flex items-center justify-between">
                     <span className="text-red-600 font-bold text-sm">{p.price}</span>
-                    <button className="text-xs text-stone-500 hover:text-red-600">İncele</button>
+                    <span className="text-xs text-stone-500 group-hover:text-red-600">İncele →</span>
                   </div>
                 </div>
-              </div>
+              </a>
             ))}
           </div>
         </div>

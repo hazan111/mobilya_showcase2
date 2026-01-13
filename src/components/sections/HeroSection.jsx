@@ -8,11 +8,17 @@ function HeroSection() {
   const heroImgRef = useRef(null);
   const revealRef1 = useIntersectionObserver();
   const revealRef2 = useIntersectionObserver();
+  const revealRef3 = useIntersectionObserver();
+  const revealRef4 = useIntersectionObserver();
 
   useEffect(() => {
     const heroImg = heroImgRef.current;
-    if (heroImg && scrollY < window.innerHeight) {
-      heroImg.style.transform = `translateY(${scrollY * 0.4}px)`;
+    if (heroImg) {
+      if (scrollY < window.innerHeight) {
+        heroImg.style.transform = `translateY(${scrollY * 0.4}px)`;
+      } else {
+        heroImg.style.transform = `translateY(${window.innerHeight * 0.4}px)`;
+      }
     }
   }, [scrollY]);
 
@@ -53,6 +59,7 @@ function HeroSection() {
           </h1>
 
           <p
+            ref={revealRef3}
             className="reveal-up text-base md:text-lg text-stone-600 font-light max-w-lg leading-relaxed"
             style={{ transitionDelay: '150ms' }}
           >
@@ -60,6 +67,7 @@ function HeroSection() {
           </p>
 
           <div
+            ref={revealRef4}
             className="reveal-up flex flex-wrap gap-3 pt-2"
             style={{ transitionDelay: '200ms' }}
           >
@@ -88,22 +96,25 @@ function HeroSection() {
 
         {/* Product Image */}
         <div className="lg:col-span-7 relative h-[40vh] md:h-[50vh] lg:h-[60vh] w-full">
-          <div className="absolute inset-0 rounded-2xl overflow-hidden reveal-scale shadow-xl bg-stone-100">
+          <div className="absolute inset-0 rounded-2xl overflow-hidden shadow-xl bg-stone-100">
             <img
               ref={heroImgRef}
               src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1600"
               alt="Kurumsal Ofis Mobilyaları"
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-100"
+              className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
               onError={(e) => {
                 e.target.src = 'https://images.unsplash.com/photo-1497215842964-222b430dc094?q=80&w=1600';
+                e.target.style.opacity = '1';
+                e.target.style.transform = 'translateY(0)';
               }}
               onLoad={(e) => {
                 e.target.style.opacity = '1';
+                e.target.style.transform = 'translateY(0)';
               }}
-              style={{ opacity: 0 }}
+              style={{ opacity: 1, transform: 'translateY(0)' }}
               loading="eager"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none z-10"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
           </div>
         </div>
       </div>

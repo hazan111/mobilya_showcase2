@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Menu, Home, Search, Heart, ShoppingCart, ChevronDown, ArrowRight, Package, Star } from 'lucide-react';
+import { Menu, X, Home, Search, Heart, ShoppingCart, ChevronDown, ArrowRight, Package, Star } from 'lucide-react';
 import { NAV_LINKS, CATEGORIES } from '../../utils/constants';
 import { useScroll } from '../../hooks/useScroll';
 
 function Header() {
   const { scrollY } = useScroll();
   const headerRef = React.useRef(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const categoriesDropdownRef = useRef(null);
   const categoriesTriggerRef = useRef(null);
@@ -62,32 +63,73 @@ function Header() {
     setIsCategoriesOpen(false);
   };
 
-  return (
-    <header
-      ref={headerRef}
-      className="fixed top-0 w-full z-50 glass-panel transition-all duration-300"
-    >
-      <div className="max-w-[95%] mx-auto px-4 py-4 md:py-5">
-        <div className="flex justify-between items-center">
-          {/* Mobile Menu */}
-          <button className="lg:hidden p-2 hover:bg-red-50 rounded-full transition-colors">
-            <Menu className="w-6 h-6 text-stone-800" />
-          </button>
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
-          {/* Logo */}
-          <a href="#" className="flex items-center gap-2 group">
-            <div className="relative w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-red-600 rounded text-white shadow-lg shadow-red-200 group-hover:bg-red-700 transition-colors duration-300">
-              <Home className="w-5 h-5 md:w-6 md:h-6" />
-            </div>
-            <span className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-stone-900">
-              WMB<span className="text-red-600">.</span>
-            </span>
-          </a>
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isMobileMenuOpen && !event.target.closest('.mobile-menu-container')) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+        document.body.style.overflow = '';
+      };
+    } else {
+      document.body.style.overflow = '';
+    }
+  }, [isMobileMenuOpen]);
+
+  return (
+    <>
+      <header
+        ref={headerRef}
+        className={`fixed top-0 w-full z-50 glass-panel transition-all duration-300 ${isMobileMenuOpen ? 'lg:relative' : ''}`}
+      >
+        <div className="max-w-[95%] mx-auto px-4 py-4 md:py-5">
+          <div className="flex justify-between items-center relative">
+            {/* Mobile Menu Button */}
+            <button 
+              onClick={toggleMobileMenu}
+              className="lg:hidden p-2 hover:bg-red-50 rounded-full transition-colors z-[60] relative"
+              aria-label="Menu"
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-6 h-6 text-stone-800" />
+              ) : (
+                <Menu className="w-6 h-6 text-stone-800" />
+              )}
+            </button>
+
+            {/* Logo */}
+            <a 
+              href="/" 
+              className="flex items-center gap-2 group flex-1 justify-center lg:flex-none lg:justify-start"
+              onClick={isMobileMenuOpen ? closeMobileMenu : undefined}
+            >
+              <div className="relative w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-red-600 rounded text-white shadow-lg shadow-red-200 group-hover:bg-red-700 transition-colors duration-300">
+                <Home className="w-5 h-5 md:w-6 md:h-6" />
+              </div>
+              <span className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-stone-900">
+                WMB<span className="text-red-600">.</span>
+              </span>
+            </a>
 
           {/* Desktop Nav */}
           <nav className="hidden lg:flex items-center gap-8 text-sm font-semibold text-stone-600">
             {NAV_LINKS.map((link) => {
-              if (link.href === '#categories') {
+              if (link.href === '/products' && link.label === 'Kategoriler') {
                 return (
                   <div
                     key={link.href}
@@ -125,7 +167,7 @@ function Header() {
                               {CATEGORIES.map((category) => (
                                 <a
                                   key={category.id}
-                                  href={`#category-${category.id}`}
+                                  href={`/category/${category.id}`}
                                   className="group flex items-center gap-4 p-3 rounded-xl hover:bg-stone-50 transition-all duration-200"
                                   onClick={() => setIsCategoriesOpen(false)}
                                 >
@@ -232,7 +274,110 @@ function Header() {
           </div>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black/60 z-[55] lg:hidden"
+            onClick={closeMobileMenu}
+          ></div>
+          
+          {/* Mobile Menu Content */}
+          <div className="fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white z-[60] shadow-2xl overflow-y-auto lg:hidden mobile-menu-container transform transition-transform duration-300 ease-in-out">
+            <div className="p-6 h-full flex flex-col">
+              {/* Mobile Menu Header */}
+              <div className="flex items-center justify-between mb-6 pb-4 border-b border-stone-200 flex-shrink-0">
+                <h2 className="font-serif text-xl font-bold text-stone-900">
+                  Menü
+                </h2>
+                <button 
+                  onClick={closeMobileMenu}
+                  className="p-2 hover:bg-red-50 rounded-full transition-colors"
+                  aria-label="Kapat"
+                >
+                  <X className="w-5 h-5 text-stone-800" />
+                </button>
+              </div>
+
+              {/* Mobile Navigation */}
+              <nav className="space-y-2 flex-1 overflow-y-auto">
+                {NAV_LINKS.map((link) => {
+                  if (link.href === '/products' && link.label === 'Kategoriler') {
+                    return (
+                      <div key={link.href}>
+                        <button
+                          onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
+                          className="w-full flex items-center justify-between px-4 py-3 text-left font-semibold text-stone-900 hover:bg-stone-50 rounded-lg transition-colors"
+                        >
+                          <span>{link.label}</span>
+                          <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isCategoriesOpen ? 'rotate-180' : ''}`} />
+                        </button>
+                        
+                        {isCategoriesOpen && (
+                          <div className="pl-4 mt-2 space-y-1 border-l-2 border-stone-100">
+                            {CATEGORIES.map((category) => (
+                              <a
+                                key={category.id}
+                                href={`/category/${category.id}`}
+                                onClick={closeMobileMenu}
+                                className="block px-4 py-2 text-sm text-stone-600 hover:text-red-600 hover:bg-stone-50 rounded-lg transition-colors"
+                              >
+                                {category.title}
+                              </a>
+                            ))}
+                            <a
+                              href="/products"
+                              onClick={closeMobileMenu}
+                              className="block px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            >
+                              Tüm Ürünler →
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }
+                  return (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      onClick={closeMobileMenu}
+                      className="block px-4 py-3 font-semibold text-stone-900 hover:bg-stone-50 hover:text-red-600 rounded-lg transition-colors"
+                    >
+                      {link.label}
+                    </a>
+                  );
+                })}
+              </nav>
+
+              {/* Mobile Actions */}
+              <div className="mt-auto pt-6 border-t border-stone-200 space-y-3 flex-shrink-0">
+                <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-stone-100 text-stone-700 rounded-lg hover:bg-stone-200 transition-colors">
+                  <Search className="w-5 h-5" />
+                  Ara
+                </button>
+                <div className="flex gap-3">
+                  <button className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border border-stone-200 text-stone-700 rounded-lg hover:bg-stone-50 transition-colors">
+                    <Heart className="w-5 h-5" />
+                    Favoriler
+                  </button>
+                  <button className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border border-stone-200 text-stone-700 rounded-lg hover:bg-stone-50 transition-colors relative">
+                    <ShoppingCart className="w-5 h-5" />
+                    Sepet
+                    <span className="absolute top-2 right-2 w-4 h-4 bg-red-600 text-[10px] flex items-center justify-center rounded-full text-white font-bold">
+                      2
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </header>
+    </>
   );
 }
 

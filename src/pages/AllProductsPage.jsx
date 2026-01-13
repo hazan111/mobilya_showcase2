@@ -96,8 +96,8 @@ function AllProductsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {allProducts.map((product, index) => (
             <div key={`${product.id}-${index}`} className="group bg-white rounded-xl border border-stone-200 hover:border-red-300 hover:shadow-lg transition-all duration-300 flex flex-col">
-              {/* Image Area */}
-              <div className="relative aspect-[4/3] overflow-hidden bg-stone-100 rounded-t-xl border-b border-stone-100">
+              {/* Image Area - Clickable */}
+              <a href={`/product/${product.id}`} className="relative aspect-[4/3] overflow-hidden bg-stone-100 rounded-t-xl border-b border-stone-100 block">
                 <img
                   src={product.image}
                   alt={product.name}
@@ -112,18 +112,18 @@ function AllProductsPage() {
                     </div>
                   </div>
                 )}
-              </div>
+              </a>
 
               {/* Content Area */}
               <div className="p-4 flex flex-col flex-1">
-                <div className="mb-3">
+                <a href={`/product/${product.id}`} className="mb-3 block">
                   <h3 className="font-serif text-lg font-semibold text-stone-900 mb-1 leading-tight group-hover:text-red-600 transition-colors">
                     {product.name}
                   </h3>
                   <p className="text-xs text-stone-500 line-clamp-1">
                     Yönetici ofisleri ve toplantı alanları için ideal.
                   </p>
-                </div>
+                </a>
 
                 {/* Trust Icons */}
                 <div className="flex gap-3 mb-4 pt-3 border-t border-stone-50">
@@ -141,14 +141,35 @@ function AllProductsPage() {
                    </div>
                 </div>
 
-                <div className="mt-auto flex items-center justify-between gap-3">
-                  <button className="flex-1 bg-stone-900 text-white text-xs font-bold py-2.5 px-3 rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center gap-2">
-                    <ShoppingCart className="w-3.5 h-3.5" />
-                    Teklif Al
-                  </button>
-                  <a href="#" className="text-stone-500 hover:text-red-600 transition-colors p-2">
-                    <ArrowRight className="w-4 h-4" />
-                  </a>
+                <div className="mt-auto">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <div className="text-lg font-bold text-red-600">{product.price}</div>
+                      {product.originalPrice && (
+                        <div className="text-xs text-stone-400 line-through">{product.originalPrice}</div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <button 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        // Sepete ekle işlevi
+                      }}
+                      className="flex-1 bg-stone-900 text-white text-xs font-bold py-2.5 px-3 rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center gap-2"
+                    >
+                      <ShoppingCart className="w-3.5 h-3.5" />
+                      Sepete Ekle
+                    </button>
+                    <a 
+                      href={`/product/${product.id}`} 
+                      className="text-stone-500 hover:text-red-600 transition-colors p-2"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <ArrowRight className="w-4 h-4" />
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>

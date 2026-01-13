@@ -6,6 +6,9 @@ import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 function AboutSection() {
   const revealRef1 = useIntersectionObserver();
   const revealRef2 = useIntersectionObserver();
+  const revealRef3 = useIntersectionObserver();
+  const revealRef4 = useIntersectionObserver();
+  const revealRef5 = useIntersectionObserver();
 
   const stats = [
     { icon: Award, value: COMPANY_STATS.years, label: 'Yıl Tecrübe' },
@@ -13,6 +16,8 @@ function AboutSection() {
     { icon: MapPin, value: COMPANY_STATS.cities, label: 'Şehir' },
     { icon: Briefcase, value: COMPANY_STATS.projects + '+', label: 'Kurumsal Proje' },
   ];
+
+  const refs = [revealRef2, revealRef3, revealRef4, revealRef5];
 
   return (
     <section className="py-12 md:py-16 px-4 bg-white border-t border-stone-100">
@@ -30,20 +35,23 @@ function AboutSection() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {stats.map((stat, index) => (
-            <div
-              key={index}
-              ref={index === 0 ? revealRef2 : null}
-              className="text-center p-6 bg-stone-50 rounded-xl border border-stone-200 hover:border-red-200 transition-colors reveal-up"
-              style={{ transitionDelay: `${index * 100}ms` }}
-            >
-              <div className="w-12 h-12 bg-white border border-stone-100 rounded-full flex items-center justify-center text-red-600 mx-auto mb-3 shadow-sm">
-                <stat.icon className="w-6 h-6" />
+          {stats.map((stat, index) => {
+            const StatIcon = stat.icon;
+            return (
+              <div
+                key={index}
+                ref={refs[index]}
+                className="text-center p-6 bg-stone-50 rounded-xl border border-stone-200 hover:border-red-200 transition-colors reveal-up"
+                style={{ transitionDelay: `${index * 100}ms` }}
+              >
+                <div className="w-12 h-12 bg-white border border-stone-100 rounded-full flex items-center justify-center text-red-600 mx-auto mb-3 shadow-sm">
+                  <StatIcon className="w-6 h-6" />
+                </div>
+                <div className="text-3xl font-bold text-stone-900 mb-1">{stat.value}</div>
+                <p className="text-sm font-medium text-stone-500">{stat.label}</p>
               </div>
-              <div className="text-3xl font-bold text-stone-900 mb-1">{stat.value}</div>
-              <p className="text-sm font-medium text-stone-500">{stat.label}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

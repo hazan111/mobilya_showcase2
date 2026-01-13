@@ -40,6 +40,42 @@ function StoresPage() {
       phone: '+90 (232) 555 40 04',
       hours: '09:30 - 19:30',
       mapLink: '#'
+    },
+    {
+      id: 5,
+      city: 'Bursa',
+      name: 'Nilüfer Mağaza',
+      address: 'Fomara Cad. No: 45, Nilüfer, Bursa',
+      phone: '+90 (224) 555 50 05',
+      hours: '09:00 - 19:00',
+      mapLink: '#'
+    },
+    {
+      id: 6,
+      city: 'Antalya',
+      name: 'Konyaaltı Showroom',
+      address: 'Atatürk Bulvarı No: 200, Konyaaltı, Antalya',
+      phone: '+90 (242) 555 60 06',
+      hours: '09:00 - 19:00',
+      mapLink: '#'
+    },
+    {
+      id: 7,
+      city: 'İzmir',
+      name: 'Bornova Mağaza',
+      address: 'Ege Üniversitesi Cad. No: 15, Bornova, İzmir',
+      phone: '+90 (232) 555 70 07',
+      hours: '09:00 - 19:00',
+      mapLink: '#'
+    },
+    {
+      id: 8,
+      city: 'Ankara',
+      name: 'Çankaya Showroom',
+      address: 'Tunalı Hilmi Cad. No: 88, Çankaya, Ankara',
+      phone: '+90 (312) 555 80 08',
+      hours: '09:00 - 19:00',
+      mapLink: '#'
     }
   ];
 
@@ -60,7 +96,7 @@ function StoresPage() {
             Size En Yakın Mağazamız
           </h1>
           <p className="text-stone-600 max-w-2xl text-lg">
-            Türkiye genelindeki 8 şubemizde ürünlerimizi yakından inceleyebilir, iç mimarlarımızdan ücretsiz proje danışmanlığı alabilirsiniz.
+            Türkiye genelindeki 8 şubemizde ürünlerimizi yakından inceleyebilir, iç mimarlarımızdan ücretsiz proje danışmanlığı alabilirsiniz. Şehir bazında filtreleyerek size en yakın mağazamızı bulabilirsiniz.
           </p>
         </div>
 
