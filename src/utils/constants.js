@@ -928,23 +928,23 @@ export const COMPANY_STATS = {
 
 export const FOOTER_LINKS = {
   shop: [
-    { href: '#', label: 'Ofis Mobilyaları' },
-    { href: '#', label: 'Yönetici Mobilyaları' },
-    { href: '#', label: 'Toplantı & Ortak Alan' },
-    { href: '#', label: 'Depolama Sistemleri' },
-    { href: '#', label: 'Proje / Özel Üretim' },
+    { href: '/category/1', label: 'Ofis Mobilyaları' },
+    { href: '/category/2', label: 'Yönetici Mobilyaları' },
+    { href: '/category/3', label: 'Toplantı & Ortak Alan' },
+    { href: '/category/4', label: 'Depolama Sistemleri' },
+    { href: '/category/5', label: 'Proje / Özel Üretim' },
   ],
   company: [
-    { href: '#', label: 'Hakkımızda' },
-    { href: '#', label: 'Projelerimiz' },
-    { href: '#', label: 'Referanslar' },
-    { href: '#', label: 'Kariyer' },
+    { href: '/about', label: 'Hakkımızda' },
+    { href: '/projects', label: 'Projelerimiz' },
+    { href: '/references', label: 'Referanslar' },
+    { href: '/career', label: 'Kariyer' },
   ],
   support: [
-    { href: '#', label: 'Satış Sonrası Destek' },
-    { href: '#', label: 'Garanti & Bakım' },
-    { href: '#', label: 'Teslimat Bilgileri' },
-    { href: '#', label: 'Sipariş Takibi' },
+    { href: '/support', label: 'Satış Sonrası Destek' },
+    { href: '/warranty', label: 'Garanti & Bakım' },
+    { href: '/delivery', label: 'Teslimat Bilgileri' },
+    { href: '/track-order', label: 'Sipariş Takibi' },
   ],
 };
 

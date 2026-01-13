@@ -1,10 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Menu, X, Home, Search, Heart, ShoppingCart, ChevronDown, ArrowRight, Package, Star } from 'lucide-react';
 import { NAV_LINKS, CATEGORIES } from '../../utils/constants';
+import { useCart } from '../../context/CartContext';
 import { useScroll } from '../../hooks/useScroll';
 
 function Header() {
   const { scrollY } = useScroll();
+  const { getCartCount } = useCart();
   const headerRef = React.useRef(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
@@ -265,12 +267,17 @@ function Header() {
               <Heart className="w-5 h-5" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-600 rounded-full animate-pulse"></span>
             </button>
-            <button className="p-2 hover:bg-red-50 rounded-full transition-colors hover:text-red-600 relative">
+            <a 
+              href="/cart"
+              className="p-2 hover:bg-red-50 rounded-full transition-colors hover:text-red-600 relative"
+            >
               <ShoppingCart className="w-5 h-5" />
-              <span className="absolute top-0 right-0 w-4 h-4 bg-red-600 text-[10px] flex items-center justify-center rounded-full text-white font-bold shadow-sm">
-                2
-              </span>
-            </button>
+              {getCartCount() > 0 && (
+                <span className="absolute top-0 right-0 w-4 h-4 bg-red-600 text-[10px] flex items-center justify-center rounded-full text-white font-bold shadow-sm">
+                  {getCartCount()}
+                </span>
+              )}
+            </a>
           </div>
         </div>
       </div>
@@ -363,13 +370,19 @@ function Header() {
                     <Heart className="w-5 h-5" />
                     Favoriler
                   </button>
-                  <button className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border border-stone-200 text-stone-700 rounded-lg hover:bg-stone-50 transition-colors relative">
+                  <a 
+                    href="/cart"
+                    onClick={closeMobileMenu}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border border-stone-200 text-stone-700 rounded-lg hover:bg-stone-50 transition-colors relative"
+                  >
                     <ShoppingCart className="w-5 h-5" />
                     Sepet
-                    <span className="absolute top-2 right-2 w-4 h-4 bg-red-600 text-[10px] flex items-center justify-center rounded-full text-white font-bold">
-                      2
-                    </span>
-                  </button>
+                    {getCartCount() > 0 && (
+                      <span className="absolute top-2 right-2 w-4 h-4 bg-red-600 text-[10px] flex items-center justify-center rounded-full text-white font-bold">
+                        {getCartCount()}
+                      </span>
+                    )}
+                  </a>
                 </div>
               </div>
             </div>

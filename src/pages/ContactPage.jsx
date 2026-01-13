@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { MapPin, Phone, Mail, Clock, Send, MessageSquare, Building2 } from 'lucide-react';
 import { CONTACT_INFO } from '../utils/constants';
+import { useToast } from '../context/ToastContext';
 
 function ContactPage() {
+  const { showToast } = useToast();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -15,7 +17,7 @@ function ContactPage() {
     e.preventDefault();
     // Form submission logic here
     console.log('Form submitted:', formData);
-    alert('Mesajınız gönderildi! En kısa sürede size dönüş yapacağız.');
+    showToast('Mesajınız gönderildi! En kısa sürede size dönüş yapacağız.', 'success');
     setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
   };
 

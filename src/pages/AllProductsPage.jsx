@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { Filter, ChevronDown, ArrowRight, ShoppingCart, CheckCircle, Truck, Shield, Wrench, Package } from 'lucide-react';
 import { PRODUCTS } from '../utils/constants';
+import { useCart } from '../context/CartContext';
+import { useToast } from '../context/ToastContext';
 
 function AllProductsPage() {
   const [activeCategory, setActiveCategory] = useState('Tümü');
   const [stockFilter, setStockFilter] = useState('all'); // all, inStock
   const [sortBy, setSortBy] = useState('recommended');
+  const { addToCart } = useCart();
+  const { showToast } = useToast();
 
   // Repeat products for demo to fill grid
   const allProducts = [...PRODUCTS, ...PRODUCTS, ...PRODUCTS, ...PRODUCTS];
@@ -155,7 +159,8 @@ function AllProductsPage() {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        // Sepete ekle işlevi
+                        addToCart(product);
+                        showToast(`${product.name} sepete eklendi!`, 'success');
                       }}
                       className="flex-1 bg-stone-900 text-white text-xs font-bold py-2.5 px-3 rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center gap-2"
                     >

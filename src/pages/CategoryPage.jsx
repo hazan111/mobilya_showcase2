@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { Filter, ChevronRight, ArrowRight, ShoppingCart } from 'lucide-react';
 import { PRODUCTS, CATEGORIES } from '../utils/constants';
+import { useCart } from '../context/CartContext';
+import { useToast } from '../context/ToastContext';
 
 function CategoryPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState('recommended');
   const [stockFilter, setStockFilter] = useState('all');
+  const { addToCart } = useCart();
+  const { showToast } = useToast();
 
   // Get category ID from URL
   const categoryId = parseInt(window.location.pathname.split('/category/')[1] || '1');
@@ -226,7 +230,8 @@ function CategoryProductCard({ product }) {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                // Sepete ekle işlevi
+                addToCart(product);
+                showToast(`${product.name} sepete eklendi!`, 'success');
               }}
               className="text-xs font-semibold text-stone-900 bg-stone-100 hover:bg-stone-200 px-3 py-1.5 rounded transition-colors flex items-center gap-1"
             >

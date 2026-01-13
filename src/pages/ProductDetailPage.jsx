@@ -4,9 +4,13 @@ import {
   ChevronRight, Star, ShoppingCart, MessageSquare 
 } from 'lucide-react';
 import { PRODUCTS } from '../utils/constants';
+import { useCart } from '../context/CartContext';
+import { useToast } from '../context/ToastContext';
 
 function ProductDetailPage() {
   const [activeImage, setActiveImage] = useState(0);
+  const { addToCart } = useCart();
+  const { showToast } = useToast();
   
   // Get product ID from URL
   const productId = parseInt(window.location.pathname.split('/product/')[1] || '1');
@@ -16,6 +20,11 @@ function ProductDetailPage() {
   useEffect(() => {
     setActiveImage(0);
   }, [productId]);
+
+  const handleAddToCart = () => {
+    addToCart(product);
+    showToast(`${product.name} sepete eklendi!`, 'success');
+  };
 
   return (
     <div className="pt-24 pb-12 px-4 md:px-8 bg-white min-h-screen">
@@ -104,7 +113,10 @@ function ProductDetailPage() {
                 </div>
 
                 <div className="space-y-3 mb-6">
-                  <button className="w-full bg-red-600 text-white font-semibold py-3.5 px-6 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-red-100">
+                  <button 
+                    onClick={handleAddToCart}
+                    className="w-full bg-red-600 text-white font-semibold py-3.5 px-6 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-red-100"
+                  >
                     <ShoppingCart className="w-5 h-5" />
                     Sepete Ekle
                   </button>

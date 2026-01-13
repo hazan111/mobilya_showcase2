@@ -29,3 +29,5 @@ export function useIntersectionObserver(options = {}) {
 
   return elementRef;
 }
+
+export default useIntersectionObserver;

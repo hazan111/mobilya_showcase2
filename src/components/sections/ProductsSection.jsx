@@ -1,6 +1,8 @@
 import React from 'react';
 import { ShoppingCart, CheckCircle, ArrowRight } from 'lucide-react';
 import { PRODUCTS } from '../../utils/constants';
+import { useCart } from '../../context/CartContext';
+import { useToast } from '../../context/ToastContext';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 
 function ProductsSection() {
@@ -33,6 +35,15 @@ function ProductsSection() {
 
 function ProductCard({ product }) {
   const revealRef = useIntersectionObserver();
+  const { addToCart } = useCart();
+  const { showToast } = useToast();
+
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart(product);
+    showToast(`${product.name} sepete eklendi!`, 'success');
+  };
 
   return (
     <div
@@ -60,11 +71,7 @@ function ProductCard({ product }) {
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 flex items-end">
           <div className="w-full p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
             <button 
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                window.location.href = `/product/${product.id}`;
-              }}
+              onClick={handleAddToCart}
               className="w-full bg-red-600 text-white font-semibold py-2.5 px-4 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2 shadow-lg"
             >
               <ShoppingCart className="w-4 h-4" />
