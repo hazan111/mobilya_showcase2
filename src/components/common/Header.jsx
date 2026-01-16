@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Menu, X, Home, Search, Heart, ShoppingCart, ChevronDown, ArrowRight, Package, Star } from 'lucide-react';
+import { Home, Search, Heart, ShoppingCart, ChevronDown, ArrowRight, Package, Star, Menu, X } from 'lucide-react';
 import { NAV_LINKS, CATEGORIES } from '../../utils/constants';
 import { useCart } from '../../context/CartContext';
 import { useScroll } from '../../hooks/useScroll';
@@ -8,10 +8,12 @@ function Header() {
   const { scrollY } = useScroll();
   const { getCartCount } = useCart();
   const headerRef = React.useRef(null);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileCategoriesOpen, setIsMobileCategoriesOpen] = useState(false);
   const categoriesDropdownRef = useRef(null);
   const categoriesTriggerRef = useRef(null);
+  const mobileMenuRef = useRef(null);
 
   React.useEffect(() => {
     const header = headerRef.current;
@@ -71,13 +73,19 @@ function Header() {
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
+    setIsMobileCategoriesOpen(false);
   };
 
   // Close mobile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (isMobileMenuOpen && !event.target.closest('.mobile-menu-container')) {
-        setIsMobileMenuOpen(false);
+      if (
+        isMobileMenuOpen &&
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target) &&
+        !event.target.closest('[data-mobile-menu-button]')
+      ) {
+        closeMobileMenu();
       }
     };
 
@@ -93,19 +101,33 @@ function Header() {
     }
   }, [isMobileMenuOpen]);
 
+  // Close mobile menu on escape key
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === 'Escape' && isMobileMenuOpen) {
+        closeMobileMenu();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isMobileMenuOpen]);
+
   return (
     <>
       <header
         ref={headerRef}
-        className={`fixed top-0 w-full z-50 glass-panel transition-all duration-300 ${isMobileMenuOpen ? 'lg:relative' : ''}`}
+        className="fixed top-0 w-full z-50 glass-panel transition-all duration-300"
       >
         <div className="max-w-[95%] mx-auto px-4 py-4 md:py-5">
           <div className="flex justify-between items-center relative">
             {/* Mobile Menu Button */}
-            <button 
+            <button
+              data-mobile-menu-button
               onClick={toggleMobileMenu}
-              className="lg:hidden p-2 hover:bg-red-50 rounded-full transition-colors z-[60] relative"
-              aria-label="Menu"
+              className="lg:hidden p-2 hover:bg-red-50 rounded-full transition-colors relative z-[60]"
+              aria-label="Menüyü Aç"
+              type="button"
             >
               {isMobileMenuOpen ? (
                 <X className="w-6 h-6 text-stone-800" />
@@ -280,56 +302,69 @@ function Header() {
             </a>
           </div>
         </div>
-      </div>
+        </div>
+      </header>
 
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <>
-          {/* Backdrop */}
-          <div 
-            className="fixed inset-0 bg-black/60 z-[55] lg:hidden"
-            onClick={closeMobileMenu}
-          ></div>
-          
-          {/* Mobile Menu Content */}
-          <div className="fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white z-[60] shadow-2xl overflow-y-auto lg:hidden mobile-menu-container transform transition-transform duration-300 ease-in-out">
-            <div className="p-6 h-full flex flex-col">
-              {/* Mobile Menu Header */}
-              <div className="flex items-center justify-between mb-6 pb-4 border-b border-stone-200 flex-shrink-0">
-                <h2 className="font-serif text-xl font-bold text-stone-900">
-                  Menü
-                </h2>
-                <button 
-                  onClick={closeMobileMenu}
-                  className="p-2 hover:bg-red-50 rounded-full transition-colors"
-                  aria-label="Kapat"
-                >
-                  <X className="w-5 h-5 text-stone-800" />
-                </button>
-              </div>
+      {/* Mobile Sidebar Menu */}
+      <>
+        {/* Backdrop */}
+        <div
+          className={`fixed inset-0 bg-black/50 z-[55] lg:hidden transition-opacity duration-300 ${
+            isMobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          }`}
+          onClick={closeMobileMenu}
+        />
 
-              {/* Mobile Navigation */}
-              <nav className="space-y-2 flex-1 overflow-y-auto">
+        {/* Sidebar Menu */}
+        <div
+          ref={mobileMenuRef}
+          className={`fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white z-[60] shadow-2xl lg:hidden transform transition-transform duration-300 ease-in-out overflow-y-auto ${
+            isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+        >
+          <div className="flex flex-col h-full">
+            {/* Menu Header */}
+            <div className="flex items-center justify-between p-6 border-b border-stone-200 flex-shrink-0">
+              <h2 className="font-serif text-2xl font-bold text-stone-900">
+                Menü
+              </h2>
+              <button
+                onClick={closeMobileMenu}
+                className="p-2 hover:bg-red-50 rounded-full transition-colors"
+                aria-label="Menüyü Kapat"
+              >
+                <X className="w-5 h-5 text-stone-800" />
+              </button>
+            </div>
+
+            {/* Navigation Links */}
+            <nav className="flex-1 overflow-y-auto py-6">
+              <div className="space-y-1 px-4">
                 {NAV_LINKS.map((link) => {
                   if (link.href === '/products' && link.label === 'Kategoriler') {
                     return (
-                      <div key={link.href}>
+                      <div key={link.href} className="mb-2">
                         <button
-                          onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
+                          onClick={() => setIsMobileCategoriesOpen(!isMobileCategoriesOpen)}
                           className="w-full flex items-center justify-between px-4 py-3 text-left font-semibold text-stone-900 hover:bg-stone-50 rounded-lg transition-colors"
                         >
                           <span>{link.label}</span>
-                          <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isCategoriesOpen ? 'rotate-180' : ''}`} />
+                          <ChevronDown
+                            className={`w-4 h-4 transition-transform duration-200 ${
+                              isMobileCategoriesOpen ? 'rotate-180' : ''
+                            }`}
+                          />
                         </button>
-                        
-                        {isCategoriesOpen && (
-                          <div className="pl-4 mt-2 space-y-1 border-l-2 border-stone-100">
+
+                        {/* Mobile Categories Dropdown */}
+                        {isMobileCategoriesOpen && (
+                          <div className="mt-2 pl-4 space-y-1 border-l-2 border-stone-100">
                             {CATEGORIES.map((category) => (
                               <a
                                 key={category.id}
                                 href={`/category/${category.id}`}
                                 onClick={closeMobileMenu}
-                                className="block px-4 py-2 text-sm text-stone-600 hover:text-red-600 hover:bg-stone-50 rounded-lg transition-colors"
+                                className="block px-4 py-2.5 text-sm text-stone-600 hover:text-red-600 hover:bg-stone-50 rounded-lg transition-colors"
                               >
                                 {category.title}
                               </a>
@@ -337,7 +372,7 @@ function Header() {
                             <a
                               href="/products"
                               onClick={closeMobileMenu}
-                              className="block px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              className="block px-4 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                             >
                               Tüm Ürünler →
                             </a>
@@ -357,39 +392,38 @@ function Header() {
                     </a>
                   );
                 })}
-              </nav>
+              </div>
+            </nav>
 
-              {/* Mobile Actions */}
-              <div className="mt-auto pt-6 border-t border-stone-200 space-y-3 flex-shrink-0">
-                <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-stone-100 text-stone-700 rounded-lg hover:bg-stone-200 transition-colors">
-                  <Search className="w-5 h-5" />
-                  Ara
+            {/* Menu Footer Actions */}
+            <div className="border-t border-stone-200 p-6 space-y-3 flex-shrink-0">
+              <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-stone-100 text-stone-700 rounded-lg hover:bg-stone-200 transition-colors">
+                <Search className="w-5 h-5" />
+                <span>Ara</span>
+              </button>
+              <div className="flex gap-3">
+                <button className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border border-stone-200 text-stone-700 rounded-lg hover:bg-stone-50 transition-colors">
+                  <Heart className="w-5 h-5" />
+                  <span className="text-sm">Favoriler</span>
                 </button>
-                <div className="flex gap-3">
-                  <button className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border border-stone-200 text-stone-700 rounded-lg hover:bg-stone-50 transition-colors">
-                    <Heart className="w-5 h-5" />
-                    Favoriler
-                  </button>
-                  <a 
-                    href="/cart"
-                    onClick={closeMobileMenu}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border border-stone-200 text-stone-700 rounded-lg hover:bg-stone-50 transition-colors relative"
-                  >
-                    <ShoppingCart className="w-5 h-5" />
-                    Sepet
-                    {getCartCount() > 0 && (
-                      <span className="absolute top-2 right-2 w-4 h-4 bg-red-600 text-[10px] flex items-center justify-center rounded-full text-white font-bold">
-                        {getCartCount()}
-                      </span>
-                    )}
-                  </a>
-                </div>
+                <a
+                  href="/cart"
+                  onClick={closeMobileMenu}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border border-stone-200 text-stone-700 rounded-lg hover:bg-stone-50 transition-colors relative"
+                >
+                  <ShoppingCart className="w-5 h-5" />
+                  <span className="text-sm">Sepet</span>
+                  {getCartCount() > 0 && (
+                    <span className="absolute top-2 right-2 w-4 h-4 bg-red-600 text-[10px] flex items-center justify-center rounded-full text-white font-bold">
+                      {getCartCount()}
+                    </span>
+                  )}
+                </a>
               </div>
             </div>
           </div>
-        </>
-      )}
-    </header>
+        </div>
+      </>
     </>
   );
 }
