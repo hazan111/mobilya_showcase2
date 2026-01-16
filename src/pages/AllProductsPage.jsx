@@ -1,20 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Filter, ChevronDown, ArrowRight, ShoppingCart, CheckCircle, Truck, Shield, Wrench, Package } from 'lucide-react';
-import { PRODUCTS } from '../utils/constants';
+import { useCatalog } from '../context/CatalogContext';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
 
 function AllProductsPage() {
-  const [activeCategory, setActiveCategory] = useState('Tümü');
+  const [activeCategoryId, setActiveCategoryId] = useState(null); // null = 'Tümü'
   const [stockFilter, setStockFilter] = useState('all'); // all, inStock
   const [sortBy, setSortBy] = useState('recommended');
   const { addToCart } = useCart();
   const { showToast } = useToast();
+  const { getAllProducts, getAllCategories, getProductsByCategoryId, loading } = useCatalog();
 
-  // Repeat products for demo to fill grid
-  const allProducts = [...PRODUCTS, ...PRODUCTS, ...PRODUCTS, ...PRODUCTS];
+  const allProducts = getAllProducts();
+  const categories = getAllCategories();
 
-  const categories = ['Tümü', 'Ofis Mobilyaları', 'Yönetici Mobilyaları', 'Toplantı & Ortak Alan', 'Depolama'];
+  // Filter products by category
+  const filteredProducts = useMemo(() => {
+    let products = activeCategoryId 
+      ? getProductsByCategoryId(activeCategoryId)
+      : allProducts;
+    
+    // Apply stock filter
+    if (stockFilter === 'inStock') {
+      products = products.filter(p => p.stock && p.stock > 0);
+    }
+    
+    // Sort products
+    const sorted = [...products].sort((a, b) => {
+      if (sortBy === 'price-asc') {
+        const priceA = typeof a.price === 'number' ? a.price : (parseFloat(a.price) || 0);
+        const priceB = typeof b.price === 'number' ? b.price : (parseFloat(b.price) || 0);
+        return priceA - priceB;
+      }
+      if (sortBy === 'price-desc') {
+        const priceA = typeof a.price === 'number' ? a.price : (parseFloat(a.price) || 0);
+        const priceB = typeof b.price === 'number' ? b.price : (parseFloat(b.price) || 0);
+        return priceB - priceA;
+      }
+      return 0;
+    });
+    
+    return sorted;
+  }, [activeCategoryId, stockFilter, sortBy, allProducts, getProductsByCategoryId]);
 
   return (
     <div className="pt-24 pb-12 px-4 md:px-8 bg-white min-h-screen">
@@ -32,7 +60,7 @@ function AllProductsPage() {
               </p>
             </div>
             <div className="text-stone-500 text-xs font-medium">
-              {allProducts.length} Ürün Listeleniyor
+              {filteredProducts.length} Ürün Listeleniyor
             </div>
           </div>
         </div>
@@ -50,17 +78,27 @@ function AllProductsPage() {
               
               {/* Category Pills */}
               <div className="flex gap-2">
-                {categories.map(cat => (
+                <button
+                  onClick={() => setActiveCategoryId(null)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${
+                    activeCategoryId === null 
+                      ? 'bg-stone-900 text-white' 
+                      : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                  }`}
+                >
+                  Tümü
+                </button>
+                {categories.slice(0, 10).map(cat => (
                   <button
-                    key={cat}
-                    onClick={() => setActiveCategory(cat)}
+                    key={cat._id}
+                    onClick={() => setActiveCategoryId(cat._id)}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${
-                      activeCategory === cat 
+                      activeCategoryId === cat._id 
                         ? 'bg-stone-900 text-white' 
                         : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
                     }`}
                   >
-                    {cat}
+                    {cat.name}
                   </button>
                 ))}
               </div>
@@ -96,19 +134,45 @@ function AllProductsPage() {
           </div>
         </div>
 
-        {/* 3. Product Grid */}
+        {loading ? (
+          <div className="text-center py-16 text-stone-600">Ürünler yükleniyor...</div>
+        ) : (
+        /* 3. Product Grid */
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {allProducts.map((product, index) => (
-            <div key={`${product.id}-${index}`} className="group bg-white rounded-xl border border-stone-200 hover:border-red-300 hover:shadow-lg transition-all duration-300 flex flex-col">
+          {filteredProducts.map((product) => {
+            const getProductImage = () => {
+              if (product.coverImage?.mediumUrl) return product.coverImage.mediumUrl;
+              if (product.coverImage?.thumbnailUrl) return product.coverImage.thumbnailUrl;
+              if (product.images && product.images.length > 0) {
+                return product.images[0].mediumUrl || product.images[0].thumbnailUrl;
+              }
+              return 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800';
+            };
+
+            const formatPrice = (price, currency = 'TRY') => {
+              if (!price && price !== 0) return 'Teklif Al';
+              const numPrice = typeof price === 'number' ? price : parseFloat(price);
+              return new Intl.NumberFormat('tr-TR', {
+                style: 'currency',
+                currency: currency,
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+              }).format(numPrice);
+            };
+
+            const isInStock = product.stock && product.stock > 0;
+
+            return (
+            <div key={product._id} className="group bg-white rounded-xl border border-stone-200 hover:border-red-300 hover:shadow-lg transition-all duration-300 flex flex-col">
               {/* Image Area - Clickable */}
-              <a href={`/product/${product.id}`} className="relative aspect-[4/3] overflow-hidden bg-stone-100 rounded-t-xl border-b border-stone-100 block">
+              <a href={`/product/${product._id}`} className="relative aspect-[4/3] overflow-hidden bg-stone-100 rounded-t-xl border-b border-stone-100 block">
                 <img
-                  src={product.image}
+                  src={getProductImage()}
                   alt={product.name}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 
-                {product.inStock && (
+                {isInStock && (
                   <div className="absolute top-3 left-3">
                     <div className="bg-white/90 backdrop-blur text-green-700 text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-green-100 flex items-center gap-1">
                       <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
@@ -120,12 +184,12 @@ function AllProductsPage() {
 
               {/* Content Area */}
               <div className="p-4 flex flex-col flex-1">
-                <a href={`/product/${product.id}`} className="mb-3 block">
+                <a href={`/product/${product._id}`} className="mb-3 block">
                   <h3 className="font-serif text-lg font-semibold text-stone-900 mb-1 leading-tight group-hover:text-red-600 transition-colors">
                     {product.name}
                   </h3>
                   <p className="text-xs text-stone-500 line-clamp-1">
-                    Yönetici ofisleri ve toplantı alanları için ideal.
+                    {product.description || 'Kurumsal ihtiyaçlarınıza özel çözümler'}
                   </p>
                 </a>
 
@@ -148,10 +212,7 @@ function AllProductsPage() {
                 <div className="mt-auto">
                   <div className="flex items-center justify-between mb-3">
                     <div>
-                      <div className="text-lg font-bold text-red-600">{product.price}</div>
-                      {product.originalPrice && (
-                        <div className="text-xs text-stone-400 line-through">{product.originalPrice}</div>
-                      )}
+                      <div className="text-lg font-bold text-red-600">{formatPrice(product.price, product.currency)}</div>
                     </div>
                   </div>
                   <div className="flex items-center justify-between gap-3">
@@ -159,7 +220,14 @@ function AllProductsPage() {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        addToCart(product);
+                        const cartProduct = {
+                          id: product._id,
+                          _id: product._id,
+                          name: product.name,
+                          price: formatPrice(product.price, product.currency),
+                          image: getProductImage(),
+                        };
+                        addToCart(cartProduct);
                         showToast(`${product.name} sepete eklendi!`, 'success');
                       }}
                       className="flex-1 bg-stone-900 text-white text-xs font-bold py-2.5 px-3 rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center gap-2"
@@ -168,7 +236,7 @@ function AllProductsPage() {
                       Sepete Ekle
                     </button>
                     <a 
-                      href={`/product/${product.id}`} 
+                      href={`/product/${product._id}`} 
                       className="text-stone-500 hover:text-red-600 transition-colors p-2"
                       onClick={(e) => e.stopPropagation()}
                     >
@@ -178,8 +246,10 @@ function AllProductsPage() {
                 </div>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
+        )}
 
         {/* 5. Bottom CTA Section */}
         <div className="bg-stone-50 rounded-2xl p-8 border border-stone-200 text-center md:text-left md:flex items-center justify-between gap-8">

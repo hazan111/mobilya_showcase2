@@ -1,6 +1,5 @@
 export const NAV_LINKS = [
   { href: '/', label: 'Ana Sayfa' },
-  { href: '/products', label: 'Kategoriler' },
   { href: '/products', label: 'Ürünler' },
   { href: '/stores', label: 'Şubelerimiz' },
   { href: '/contact', label: 'İletişim' },

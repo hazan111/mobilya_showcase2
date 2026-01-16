@@ -1,12 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Menu, X, Home, Search, Heart, ShoppingCart, ChevronDown, ArrowRight, Package, Star } from 'lucide-react';
-import { NAV_LINKS, CATEGORIES } from '../../utils/constants';
+import { NAV_LINKS } from '../../utils/constants';
+import { useCatalog } from '../../context/CatalogContext';
 import { useCart } from '../../context/CartContext';
 import { useScroll } from '../../hooks/useScroll';
 
 function Header() {
   const { scrollY } = useScroll();
   const { getCartCount } = useCart();
+  const { getRootCategories, getAllCategories } = useCatalog();
+  const rootCategories = getRootCategories();
+  const allCategories = getAllCategories();
   const headerRef = React.useRef(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
@@ -131,7 +135,7 @@ function Header() {
           {/* Desktop Nav */}
           <nav className="hidden lg:flex items-center gap-8 text-sm font-semibold text-stone-600">
             {NAV_LINKS.map((link) => {
-              if (link.href === '/products' && link.label === 'Kategoriler') {
+              if (link.href === '/products') {
                 return (
                   <div
                     key={link.href}
@@ -166,33 +170,36 @@ function Header() {
                               Tüm Kategoriler
                             </h3>
                             <div className="grid grid-cols-1 gap-2">
-                              {CATEGORIES.map((category) => (
+                              {rootCategories.map((category) => {
+                                const categoryImage = category.image || 'https://images.unsplash.com/photo-1497215842964-222b430dc094?q=80&w=800';
+                                return (
                                 <a
-                                  key={category.id}
-                                  href={`/category/${category.id}`}
+                                  key={category._id}
+                                  href={`/category/${category._id}`}
                                   className="group flex items-center gap-4 p-3 rounded-xl hover:bg-stone-50 transition-all duration-200"
                                   onClick={() => setIsCategoriesOpen(false)}
                                 >
                                   <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-stone-100 flex-shrink-0 border border-stone-100 group-hover:border-red-100">
                                     <img
-                                      src={category.image}
-                                      alt={category.title}
+                                      src={categoryImage}
+                                      alt={category.name}
                                       className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300"
                                     />
                                   </div>
                                   <div className="flex-1 min-w-0">
                                     <div className="flex items-center justify-between mb-0.5">
                                       <h4 className="font-serif font-semibold text-stone-900 group-hover:text-red-600 transition-colors">
-                                        {category.title}
+                                        {category.name}
                                       </h4>
                                       <ArrowRight className="w-4 h-4 text-stone-300 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
                                     </div>
                                     <p className="text-xs text-stone-500 line-clamp-1 group-hover:text-stone-600">
-                                      {category.subtitle}
+                                      {category.description || 'Kurumsal ihtiyaçlarınıza özel çözümler'}
                                     </p>
                                   </div>
                                 </a>
-                              ))}
+                                );
+                              })}
                             </div>
                             <div className="mt-4 px-2">
                               <a
@@ -311,7 +318,7 @@ function Header() {
               {/* Mobile Navigation */}
               <nav className="space-y-2 flex-1 overflow-y-auto">
                 {NAV_LINKS.map((link) => {
-                  if (link.href === '/products' && link.label === 'Kategoriler') {
+                  if (link.href === '/products') {
                     return (
                       <div key={link.href}>
                         <button
@@ -324,14 +331,14 @@ function Header() {
                         
                         {isCategoriesOpen && (
                           <div className="pl-4 mt-2 space-y-1 border-l-2 border-stone-100">
-                            {CATEGORIES.map((category) => (
+                            {rootCategories.map((category) => (
                               <a
-                                key={category.id}
-                                href={`/category/${category.id}`}
+                                key={category._id}
+                                href={`/category/${category._id}`}
                                 onClick={closeMobileMenu}
                                 className="block px-4 py-2 text-sm text-stone-600 hover:text-red-600 hover:bg-stone-50 rounded-lg transition-colors"
                               >
-                                {category.title}
+                                {category.name}
                               </a>
                             ))}
                             <a

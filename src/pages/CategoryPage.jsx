@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Filter, ChevronRight, ArrowRight, ShoppingCart } from 'lucide-react';
-import { PRODUCTS, CATEGORIES } from '../utils/constants';
+import { useCatalog } from '../context/CatalogContext';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
 
@@ -10,33 +10,70 @@ function CategoryPage() {
   const [stockFilter, setStockFilter] = useState('all');
   const { addToCart } = useCart();
   const { showToast } = useToast();
+  const { getCategoryById, getProductsByCategoryId, loading } = useCatalog();
 
   // Get category ID from URL
-  const categoryId = parseInt(window.location.pathname.split('/category/')[1] || '1');
-  const category = CATEGORIES.find(c => c.id === categoryId) || CATEGORIES[0];
+  const categoryId = window.location.pathname.split('/category/')[1];
+  const category = getCategoryById(categoryId);
   
-  // Filter products by category
-  const categoryProducts = PRODUCTS.filter(p => p.category === category.title);
+  // Filter products by category (including subcategories)
+  const getCategoryProducts = () => {
+    if (!category) return [];
+    
+    let products = getProductsByCategoryId(categoryId);
+    
+    // Subcategories varsa onların ürünlerini de ekle
+    if (category.subcategories && category.subcategories.length > 0) {
+      category.subcategories.forEach(subcat => {
+        products = products.concat(getProductsByCategoryId(subcat._id));
+      });
+    }
+    
+    return products;
+  };
+  
+  const categoryProducts = getCategoryProducts();
   
   // Apply stock filter
   const filteredProducts = stockFilter === 'inStock' 
-    ? categoryProducts.filter(p => p.inStock)
+    ? categoryProducts.filter(p => p.stock && p.stock > 0)
     : categoryProducts;
 
   // Sort products
   const sortedProducts = [...filteredProducts].sort((a, b) => {
     if (sortBy === 'price-asc') {
-      const priceA = parseFloat(a.price.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
-      const priceB = parseFloat(b.price.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+      const priceA = typeof a.price === 'number' ? a.price : (parseFloat(a.price) || 0);
+      const priceB = typeof b.price === 'number' ? b.price : (parseFloat(b.price) || 0);
       return priceA - priceB;
     }
     if (sortBy === 'price-desc') {
-      const priceA = parseFloat(a.price.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
-      const priceB = parseFloat(b.price.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+      const priceA = typeof a.price === 'number' ? a.price : (parseFloat(a.price) || 0);
+      const priceB = typeof b.price === 'number' ? b.price : (parseFloat(b.price) || 0);
       return priceB - priceA;
     }
     return 0;
   });
+
+  if (loading) {
+    return (
+      <div className="pt-24 pb-12 px-4 md:px-8 bg-white min-h-screen">
+        <div className="max-w-7xl mx-auto text-center text-stone-600">
+          Kategori verileri yükleniyor...
+        </div>
+      </div>
+    );
+  }
+
+  if (!category) {
+    return (
+      <div className="pt-24 pb-12 px-4 md:px-8 bg-white min-h-screen">
+        <div className="max-w-7xl mx-auto text-center text-stone-600">
+          <h1 className="text-2xl mb-4">Kategori bulunamadı</h1>
+          <a href="/products" className="text-red-600 hover:text-red-700">Ürünlere dön →</a>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-24 pb-12 px-4 md:px-8 bg-white min-h-screen">
@@ -51,13 +88,13 @@ function CategoryPage() {
                 <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
                 <a href="/products" className="hover:text-stone-900 transition-colors">Kategoriler</a>
                 <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
-                <span className="text-stone-900 font-medium">{category.title}</span>
+                <span className="text-stone-900 font-medium">{category.name}</span>
               </nav>
               <h1 className="text-3xl md:text-4xl font-serif text-stone-900 mb-2">
-                {category.title}
+                {category.name}
               </h1>
               <p className="text-stone-600 max-w-2xl text-sm md:text-base">
-                {category.subtitle}
+                {category.description || 'Kurumsal ihtiyaçlarınıza özel çözümler'}
               </p>
             </div>
             <div className="text-stone-500 text-sm font-medium">
@@ -195,15 +232,61 @@ function CategoryPage() {
 
 // Simplified Card for Category Page
 function CategoryProductCard({ product }) {
+  const { addToCart } = useCart();
+  const { showToast } = useToast();
+
+  const getProductImage = () => {
+    if (product.coverImage?.mediumUrl) return product.coverImage.mediumUrl;
+    if (product.coverImage?.thumbnailUrl) return product.coverImage.thumbnailUrl;
+    if (product.images && product.images.length > 0) {
+      return product.images[0].mediumUrl || product.images[0].thumbnailUrl;
+    }
+    return 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800';
+  };
+
+  const formatPrice = (price, currency = 'TRY') => {
+    if (!price && price !== 0) return 'Teklif Al';
+    const numPrice = typeof price === 'number' ? price : parseFloat(price);
+    return new Intl.NumberFormat('tr-TR', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(numPrice);
+  };
+
+  const getFirstFeature = () => {
+    if (product.features && product.features.length > 0) {
+      return product.features[0].name || product.features[0].value;
+    }
+    return product.description || 'Yüksek kalite';
+  };
+
+  const isInStock = product.stock && product.stock > 0;
+
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const cartProduct = {
+      id: product._id,
+      _id: product._id,
+      name: product.name,
+      price: formatPrice(product.price, product.currency),
+      image: getProductImage(),
+    };
+    addToCart(cartProduct);
+    showToast(`${product.name} sepete eklendi!`, 'success');
+  };
+
   return (
     <div className="group bg-white rounded-xl overflow-hidden border border-stone-200 hover:border-red-300 hover:shadow-lg transition-all duration-300 flex flex-col">
-      <a href={`/product/${product.id}`} className="relative aspect-[4/3] overflow-hidden bg-stone-100 block">
+      <a href={`/product/${product._id}`} className="relative aspect-[4/3] overflow-hidden bg-stone-100 block">
         <img
-          src={product.image}
+          src={getProductImage()}
           alt={product.name}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        {product.inStock && (
+        {isInStock && (
           <div className="absolute top-3 left-3">
             <div className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">
               STOKTA
@@ -212,33 +295,25 @@ function CategoryProductCard({ product }) {
         )}
       </a>
       <div className="p-4 flex flex-col flex-1">
-        <a href={`/product/${product.id}`}>
+        <a href={`/product/${product._id}`}>
           <h3 className="font-serif text-lg font-medium text-stone-900 mb-1 group-hover:text-red-600 transition-colors truncate">
             {product.name}
           </h3>
         </a>
-        <p className="text-xs text-stone-500 mb-3 line-clamp-1">{product.features && product.features[0]}</p>
+        <p className="text-xs text-stone-500 mb-3 line-clamp-1">{getFirstFeature()}</p>
         <div className="mt-auto flex items-center justify-between gap-3">
           <div>
-            <div className="font-bold text-red-600">{product.price}</div>
-            {product.originalPrice && (
-              <div className="text-xs text-stone-400 line-through">{product.originalPrice}</div>
-            )}
+            <div className="font-bold text-red-600">{formatPrice(product.price, product.currency)}</div>
           </div>
           <div className="flex items-center gap-2">
             <button 
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                addToCart(product);
-                showToast(`${product.name} sepete eklendi!`, 'success');
-              }}
+              onClick={handleAddToCart}
               className="text-xs font-semibold text-stone-900 bg-stone-100 hover:bg-stone-200 px-3 py-1.5 rounded transition-colors flex items-center gap-1"
             >
               <ShoppingCart className="w-3 h-3" />
             </button>
             <a 
-              href={`/product/${product.id}`}
+              href={`/product/${product._id}`}
               className="text-xs font-semibold text-red-600 border border-red-100 px-3 py-1.5 rounded hover:bg-red-50 transition-colors"
             >
               Detay

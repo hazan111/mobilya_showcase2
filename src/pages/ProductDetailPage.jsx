@@ -3,7 +3,7 @@ import {
   CheckCircle, Truck, Wrench, Shield, ArrowRight, 
   ChevronRight, Star, ShoppingCart, MessageSquare 
 } from 'lucide-react';
-import { PRODUCTS } from '../utils/constants';
+import { useCatalog } from '../context/CatalogContext';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
 
@@ -11,20 +11,172 @@ function ProductDetailPage() {
   const [activeImage, setActiveImage] = useState(0);
   const { addToCart } = useCart();
   const { showToast } = useToast();
+  const { getProductById, getCategoryById, getAllProducts, loading } = useCatalog();
   
   // Get product ID from URL
-  const productId = parseInt(window.location.pathname.split('/product/')[1] || '1');
-  const product = PRODUCTS.find(p => p.id === productId) || PRODUCTS[0];
+  const productId = window.location.pathname.split('/product/')[1];
+  const product = getProductById(productId);
+  const category = product ? getCategoryById(product.category) : null;
 
   // Reset active image when product changes
   useEffect(() => {
     setActiveImage(0);
   }, [productId]);
 
+  // Helper functions
+  const getProductImages = () => {
+    if (!product) return [];
+    const images = [];
+    
+    // Cover image
+    if (product.coverImage?.originalUrl) {
+      images.push(product.coverImage.originalUrl);
+    } else if (product.coverImage?.mediumUrl) {
+      images.push(product.coverImage.mediumUrl);
+    }
+    
+    // Additional images
+    if (product.images && product.images.length > 0) {
+      product.images.forEach(img => {
+        if (img.originalUrl && !images.includes(img.originalUrl)) {
+          images.push(img.originalUrl);
+        } else if (img.mediumUrl && !images.includes(img.mediumUrl)) {
+          images.push(img.mediumUrl);
+        }
+      });
+    }
+    
+    return images.length > 0 ? images : ['https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1600'];
+  };
+
+  const formatPrice = (price, currency = 'TRY') => {
+    if (!price && price !== 0) return 'Teklif Al';
+    const numPrice = typeof price === 'number' ? price : parseFloat(price);
+    return new Intl.NumberFormat('tr-TR', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(numPrice);
+  };
+
+  // Özellikler - Features array'inden highlighted veya önemli olanları al
+  const getProductFeatures = () => {
+    if (!product || !product.features || product.features.length === 0) {
+      return [];
+    }
+    
+    // isHighlighted olanları veya ilk birkaç özelliği göster
+    return product.features
+      .filter(f => f.isHighlighted || f.name) // Highlighted veya name'i olanları filtrele
+      .map(f => f.name || f.value)
+      .filter((v, i, self) => self.indexOf(v) === i) // Duplicate'leri kaldır
+      .slice(0, 5); // Maksimum 5 özellik göster
+  };
+
+  // Özellikleri kategorilere göre grupla - Her kategori için ayrı bölüm oluştur
+  const getProductSpecsByCategory = () => {
+    if (!product || !product.features || product.features.length === 0) {
+      return [];
+    }
+    
+    // Features'ları kategorilere göre grupla
+    const specsByCategory = {};
+    
+    product.features.forEach(feature => {
+      if (!feature.name || feature.value === undefined || feature.value === null) {
+        return; // name veya value olmayanları atla
+      }
+      
+      const categoryName = feature.featureCategory?.name || 'Genel';
+      const categoryId = feature.featureCategory?._id || 'general';
+      
+      if (!specsByCategory[categoryId]) {
+        specsByCategory[categoryId] = {
+          categoryName: categoryName,
+          categoryId: categoryId,
+          specs: [],
+        };
+      }
+      
+      // Value'yu string'e dönüştür
+      let displayValue = '';
+      if (typeof feature.value === 'object') {
+        // Obje ise önce dimensions formatını kontrol et
+        if (feature.value.unit && (feature.value.length || feature.value.width || feature.value.height)) {
+          const dims = feature.value;
+          const unit = dims.unit || 'cm';
+          if (dims.length && dims.width && dims.height) {
+            displayValue = `${dims.length} x ${dims.width} x ${dims.height} ${unit}`;
+          } else if (dims.length && dims.width) {
+            displayValue = `${dims.length} x ${dims.width} ${unit}`;
+          } else if (dims.length) {
+            displayValue = `${dims.length} ${unit}`;
+          } else {
+            displayValue = feature.value.name || feature.value.value || JSON.stringify(feature.value);
+          }
+        } else {
+          displayValue = feature.value.name || feature.value.value || JSON.stringify(feature.value);
+        }
+      } else {
+        displayValue = String(feature.value);
+      }
+      
+      specsByCategory[categoryId].specs.push({
+        label: feature.name,
+        value: displayValue,
+        order: feature.order || 0,
+      });
+    });
+    
+    // Her kategorideki özellikleri order'a göre sırala
+    const categories = Object.values(specsByCategory).map(category => ({
+      ...category,
+      specs: category.specs.sort((a, b) => a.order - b.order),
+    }));
+    
+    // Kategorileri alfabetik olarak sırala (veya order'a göre)
+    categories.sort((a, b) => a.categoryName.localeCompare(b.categoryName));
+    
+    return categories;
+  };
+
   const handleAddToCart = () => {
-    addToCart(product);
+    if (!product) return;
+    const cartProduct = {
+      id: product._id,
+      _id: product._id,
+      name: product.name,
+      price: formatPrice(product.price, product.currency),
+      image: getProductImages()[0],
+    };
+    addToCart(cartProduct);
     showToast(`${product.name} sepete eklendi!`, 'success');
   };
+
+  if (loading) {
+    return (
+      <div className="pt-24 pb-12 px-4 md:px-8 bg-white min-h-screen">
+        <div className="max-w-7xl mx-auto text-center text-stone-600">
+          Ürün detayları yükleniyor...
+        </div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="pt-24 pb-12 px-4 md:px-8 bg-white min-h-screen">
+        <div className="max-w-7xl mx-auto text-center text-stone-600">
+          <h1 className="text-2xl mb-4">Ürün bulunamadı</h1>
+          <a href="/products" className="text-red-600 hover:text-red-700">Ürünlere dön →</a>
+        </div>
+      </div>
+    );
+  }
+
+  const productImages = getProductImages();
+  const isInStock = product.stock && product.stock > 0;
 
   return (
     <div className="pt-24 pb-12 px-4 md:px-8 bg-white min-h-screen">
@@ -34,7 +186,7 @@ function ProductDetailPage() {
         <nav className="flex items-center text-sm text-stone-500 mb-6 overflow-x-auto whitespace-nowrap">
           <a href="/" className="hover:text-stone-900 transition-colors">Ana Sayfa</a>
           <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
-          <a href="/products" className="hover:text-stone-900 transition-colors">{product.category || 'Ürünler'}</a>
+          <a href="/products" className="hover:text-stone-900 transition-colors">{category?.name || 'Ürünler'}</a>
           <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
           <span className="text-stone-900 font-medium">{product.name}</span>
         </nav>
@@ -44,19 +196,19 @@ function ProductDetailPage() {
           <div className="lg:col-span-7 space-y-4">
             <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-stone-100 shadow-sm border border-stone-100">
               <img 
-                src={product.images && product.images.length > 0 ? product.images[activeImage] : product.image} 
+                src={productImages[activeImage] || productImages[0]} 
                 alt={product.name} 
                 className="w-full h-full object-cover"
               />
-              {product.inStock && (
+              {isInStock && (
                 <div className="absolute top-4 left-4 bg-green-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
                   STOKTA
                 </div>
               )}
             </div>
-            {product.images && product.images.length > 1 && (
+            {productImages.length > 1 && (
               <div className="grid grid-cols-4 gap-4">
-                {product.images.map((img, idx) => (
+                {productImages.map((img, idx) => (
                   <button 
                     key={idx}
                     onClick={() => setActiveImage(idx)}
@@ -94,22 +246,9 @@ function ProductDetailPage() {
               {/* Price Block */}
               <div className="bg-stone-50 rounded-xl p-6 border border-stone-200">
                 <div className="flex items-end gap-3 mb-6 flex-wrap">
-                  <span className="text-3xl font-bold text-red-600">{product.price}</span>
-                  {product.originalPrice && (
-                    <>
-                      <span className="text-lg text-stone-400 line-through mb-1">{product.originalPrice}</span>
-                      <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded font-semibold mb-1">
-                        {(() => {
-                          const priceNum = parseFloat(product.price.replace(/[^\d,]/g, '').replace(',', '.'));
-                          const originalNum = parseFloat(product.originalPrice.replace(/[^\d,]/g, '').replace(',', '.'));
-                          if (priceNum && originalNum && originalNum > priceNum) {
-                            return Math.round((1 - priceNum / originalNum) * 100) + '% İndirim';
-                          }
-                          return '';
-                        })()}
-                      </span>
-                    </>
-                  )}
+                  <span className="text-3xl font-bold text-red-600">
+                    {formatPrice(product.price, product.currency)}
+                  </span>
                 </div>
 
                 <div className="space-y-3 mb-6">
@@ -144,7 +283,7 @@ function ProductDetailPage() {
 
               {/* Key Features List */}
               <ul className="space-y-2">
-                {(product.detailedFeatures || product.features || []).map((feature, idx) => (
+                {getProductFeatures().map((feature, idx) => (
                   <li key={idx} className="flex items-center gap-2 text-sm text-stone-600">
                     <CheckCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
                     {feature}
@@ -155,39 +294,41 @@ function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Technical Specs & Details */}
-        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 mb-16 border-t border-stone-100 pt-12">
-          <div className="lg:col-span-8">
-            <h2 className="text-2xl font-serif font-semibold text-stone-900 mb-6">Teknik Özellikler</h2>
-            {product.specs && product.specs.length > 0 ? (
-              <div className="bg-white rounded-xl border border-stone-200 overflow-hidden">
-                <table className="w-full text-sm text-left">
-                  <tbody>
-                    {product.specs.map((spec, idx) => (
-                      <tr key={idx} className="border-b border-stone-100 last:border-0 hover:bg-stone-50 transition-colors">
-                        <th className="py-4 px-6 font-medium text-stone-900 w-1/3 bg-stone-50/50">{spec.label}</th>
-                        <td className="py-4 px-6 text-stone-600">{spec.value}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+        {/* Özellik Kategorileri - Her kategori için ayrı bölüm */}
+        {getProductSpecsByCategory().length > 0 && (
+          <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 mb-16 border-t border-stone-100 pt-12">
+            <div className="lg:col-span-8 space-y-8">
+              {getProductSpecsByCategory().map((category) => (
+                <div key={category.categoryId}>
+                  <h2 className="text-2xl font-serif font-semibold text-stone-900 mb-6">
+                    {category.categoryName}
+                  </h2>
+                  <div className="bg-white rounded-xl border border-stone-200 overflow-hidden">
+                    <table className="w-full text-sm text-left">
+                      <tbody>
+                        {category.specs.map((spec, idx) => (
+                          <tr key={`${category.categoryId}-${spec.label}-${idx}`} className="border-b border-stone-100 last:border-0 hover:bg-stone-50 transition-colors">
+                            <th className="py-4 px-6 font-medium text-stone-900 w-1/3 bg-stone-50/50">{spec.label}</th>
+                            <td className="py-4 px-6 text-stone-600">{spec.value}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))}
+              
+              {/* Kurumsal Güvence - Tüm kategorilerden sonra */}
+              <div className="mt-8 bg-blue-50 rounded-xl p-6 border border-blue-100">
+                <h3 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
+                  <Shield className="w-5 h-5" />
+                  Kurumsal Güvence
+                </h3>
+                <p className="text-sm text-blue-800 leading-relaxed">
+                  Bu ürün WMB Mobilya kalite standartlarına uygun olarak üretilmiştir. ISO 9001 kalite yönetim sistemi belgeli tesislerimizde, çevreye duyarlı malzemeler kullanılarak imal edilmiştir.
+                </p>
               </div>
-            ) : (
-              <div className="bg-stone-50 rounded-xl p-6 border border-stone-200 text-stone-600 text-sm">
-                Teknik özellikler yakında eklenecektir.
-              </div>
-            )}
-            
-            <div className="mt-8 bg-blue-50 rounded-xl p-6 border border-blue-100">
-              <h3 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
-                <Shield className="w-5 h-5" />
-                Kurumsal Güvence
-              </h3>
-              <p className="text-sm text-blue-800 leading-relaxed">
-                Bu ürün WMB Mobilya kalite standartlarına uygun olarak üretilmiştir. ISO 9001 kalite yönetim sistemi belgeli tesislerimizde, çevreye duyarlı malzemeler kullanılarak imal edilmiştir.
-              </p>
             </div>
-          </div>
           
           <div className="lg:col-span-4">
             <h2 className="text-xl font-serif font-semibold text-stone-900 mb-6">Kullanım Alanları</h2>
@@ -214,35 +355,45 @@ function ProductDetailPage() {
               </div>
             </div>
           </div>
-        </div>
+          </div>
+        )}
 
         {/* Related Products */}
         <div>
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-serif font-semibold text-stone-900">Benzer Ürünler</h2>
-            <a href="#" className="text-red-600 font-medium text-sm hover:text-red-700 flex items-center gap-1">
-              Tümünü Gör <ArrowRight className="w-4 h-4" />
-            </a>
+            {category && (
+              <a href={`/category/${category._id}`} className="text-red-600 font-medium text-sm hover:text-red-700 flex items-center gap-1">
+                Tümünü Gör <ArrowRight className="w-4 h-4" />
+              </a>
+            )}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {PRODUCTS.filter(p => p.id !== product.id).slice(0, 4).map((p) => (
-              <a 
-                key={p.id}
-                href={`/product/${p.id}`}
-                className="group bg-white rounded-xl overflow-hidden border border-stone-200 hover:border-red-300 hover:shadow-lg transition-all duration-300 block"
-              >
-                <div className="relative aspect-[4/3] bg-stone-100 overflow-hidden">
-                  <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
-                </div>
-                <div className="p-4">
-                  <h3 className="font-serif font-medium text-stone-900 mb-1 truncate">{p.name}</h3>
-                  <div className="flex items-center justify-between">
-                    <span className="text-red-600 font-bold text-sm">{p.price}</span>
-                    <span className="text-xs text-stone-500 group-hover:text-red-600">İncele →</span>
-                  </div>
-                </div>
-              </a>
-            ))}
+            {getAllProducts()
+              .filter(p => p._id !== product._id && (!category || p.category === category._id))
+              .slice(0, 4)
+              .map((p) => {
+                const relatedImage = p.coverImage?.mediumUrl || p.coverImage?.thumbnailUrl || 
+                  (p.images && p.images[0]?.mediumUrl) || 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800';
+                return (
+                  <a 
+                    key={p._id}
+                    href={`/product/${p._id}`}
+                    className="group bg-white rounded-xl overflow-hidden border border-stone-200 hover:border-red-300 hover:shadow-lg transition-all duration-300 block"
+                  >
+                    <div className="relative aspect-[4/3] bg-stone-100 overflow-hidden">
+                      <img src={relatedImage} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-serif font-medium text-stone-900 mb-1 truncate">{p.name}</h3>
+                      <div className="flex items-center justify-between">
+                        <span className="text-red-600 font-bold text-sm">{formatPrice(p.price, p.currency)}</span>
+                        <span className="text-xs text-stone-500 group-hover:text-red-600">İncele →</span>
+                      </div>
+                    </div>
+                  </a>
+                );
+              })}
           </div>
         </div>
 

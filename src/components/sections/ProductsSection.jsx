@@ -1,12 +1,24 @@
 import React from 'react';
 import { ShoppingCart, CheckCircle, ArrowRight } from 'lucide-react';
-import { PRODUCTS } from '../../utils/constants';
+import { useCatalog } from '../../context/CatalogContext';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../context/ToastContext';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 
 function ProductsSection() {
   const revealRef = useIntersectionObserver();
+  const { getAllProducts, loading } = useCatalog();
+  const products = getAllProducts().slice(0, 6);
+
+  if (loading) {
+    return (
+      <section id="products" className="py-12 md:py-16 bg-stone-50 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
+          <div className="text-center text-stone-600">Ürünler yükleniyor...</div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="products" className="py-12 md:py-16 bg-stone-50 relative overflow-hidden">
@@ -24,24 +36,72 @@ function ProductsSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-          {PRODUCTS.slice(0, 6).map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+          {products.length > 0 ? (
+            products.map((product, index) => (
+              <ProductCard 
+                key={product._id || index} 
+                product={product}
+                delay={`${(index + 1) * 100}ms`}
+              />
+            ))
+          ) : (
+            <div className="col-span-full text-center text-stone-600 py-8">
+              Ürün bulunamadı.
+            </div>
+          )}
         </div>
       </div>
     </section>
   );
 }
 
-function ProductCard({ product }) {
+function ProductCard({ product, delay = '100ms' }) {
   const revealRef = useIntersectionObserver();
   const { addToCart } = useCart();
   const { showToast } = useToast();
 
+  // API'den gelen product formatını UI formatına dönüştür
+  const getProductImage = () => {
+    if (product.coverImage?.mediumUrl) return product.coverImage.mediumUrl;
+    if (product.coverImage?.thumbnailUrl) return product.coverImage.thumbnailUrl;
+    if (product.images && product.images.length > 0) {
+      return product.images[0].mediumUrl || product.images[0].thumbnailUrl;
+    }
+    return 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800';
+  };
+
+  const formatPrice = (price, currency = 'TRY') => {
+    if (!price && price !== 0) return 'Teklif Al';
+    const numPrice = typeof price === 'number' ? price : parseFloat(price);
+    return new Intl.NumberFormat('tr-TR', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(numPrice);
+  };
+
+  const getProductFeatures = () => {
+    if (product.features && product.features.length > 0) {
+      return product.features.slice(0, 2).map(f => f.name || f.value);
+    }
+    return ['Yüksek kalite', 'Hızlı teslimat'];
+  };
+
+  const isInStock = product.stock && product.stock > 0;
+
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    addToCart(product);
+    // API product formatını cart formatına dönüştür
+    const cartProduct = {
+      id: product._id,
+      _id: product._id,
+      name: product.name,
+      price: formatPrice(product.price, product.currency),
+      image: getProductImage(),
+    };
+    addToCart(cartProduct);
     showToast(`${product.name} sepete eklendi!`, 'success');
   };
 
@@ -49,20 +109,20 @@ function ProductCard({ product }) {
     <div
       ref={revealRef}
       className="group bg-white rounded-xl overflow-hidden border border-stone-200 hover:border-red-300 hover:shadow-xl transition-all duration-300 reveal-up"
-      style={{ transitionDelay: product.delay }}
+      style={{ transitionDelay: delay }}
     >
-      <a href={`/product/${product.id}`} className="relative aspect-[3/4] overflow-hidden bg-stone-100 block">
+      <a href={`/product/${product._id}`} className="relative aspect-[3/4] overflow-hidden bg-stone-100 block">
         <img
-          src={product.image}
+          src={getProductImage()}
           alt={product.name}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
         
         {/* Stock Badge - Subtle */}
-        {product.inStock && (
+        {isInStock && (
           <div className="absolute top-3 left-3">
             <div className="bg-green-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
-              {product.badges[0]}
+              Stokta
             </div>
           </div>
         )}
@@ -82,14 +142,14 @@ function ProductCard({ product }) {
       </a>
 
       <div className="p-5">
-        <a href={`/product/${product.id}`}>
+        <a href={`/product/${product._id}`}>
           <h3 className="font-serif text-xl font-semibold text-stone-900 mb-3 group-hover:text-red-600 transition-colors">
             {product.name}
           </h3>
         </a>
         
         <div className="space-y-2 mb-4">
-          {product.features.map((feature, index) => (
+          {getProductFeatures().map((feature, index) => (
             <div key={index} className="flex items-center gap-2 text-sm text-stone-600">
               <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
               <span>{feature}</span>
@@ -100,16 +160,11 @@ function ProductCard({ product }) {
         <div className="flex items-center justify-between pt-4 border-t border-stone-100">
           <div>
             <div className="text-lg font-bold text-red-600">
-              {product.price}
+              {formatPrice(product.price, product.currency)}
             </div>
-            {product.originalPrice && (
-              <div className="text-sm text-stone-400 line-through">
-                {product.originalPrice}
-              </div>
-            )}
           </div>
           <a
-            href={`/product/${product.id}`}
+            href={`/product/${product._id}`}
             className="inline-flex items-center gap-1.5 text-red-600 font-semibold text-sm hover:gap-2 transition-all"
           >
             Detay
