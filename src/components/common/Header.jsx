@@ -363,9 +363,9 @@ function Header() {
                           />
                         </button>
                         
-                        {isCategoriesOpen && (
+                        {isMobileCategoriesOpen && (
                           <div className="pl-4 mt-2 space-y-1 border-l-2 border-stone-100">
-                            {CATEGORIES.map((category) => (
+                            {rootCategories.map((category) => (
                               <a
                                 key={category._id}
                                 href={`/category/${category._id}`}
