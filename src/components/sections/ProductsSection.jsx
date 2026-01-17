@@ -62,11 +62,26 @@ function ProductCard({ product, delay = '100ms' }) {
 
   // API'den gelen product formatını UI formatına dönüştür
   const getProductImage = () => {
+    // Önce isPrimary olan görseli bul
+    if (product.images && product.images.length > 0) {
+      const primaryImage = product.images.find(img => img.isPrimary === true);
+      if (primaryImage) {
+        if (primaryImage.mediumUrl) return primaryImage.mediumUrl;
+        if (primaryImage.thumbnailUrl) return primaryImage.thumbnailUrl;
+        if (primaryImage.originalUrl) return primaryImage.originalUrl;
+      }
+      // İlk görseli kullan
+      const firstImage = product.images[0];
+      if (firstImage.mediumUrl) return firstImage.mediumUrl;
+      if (firstImage.thumbnailUrl) return firstImage.thumbnailUrl;
+      if (firstImage.originalUrl) return firstImage.originalUrl;
+    }
+    
+    // Cover image kullan
     if (product.coverImage?.mediumUrl) return product.coverImage.mediumUrl;
     if (product.coverImage?.thumbnailUrl) return product.coverImage.thumbnailUrl;
-    if (product.images && product.images.length > 0) {
-      return product.images[0].mediumUrl || product.images[0].thumbnailUrl;
-    }
+    if (product.coverImage?.originalUrl) return product.coverImage.originalUrl;
+    
     return 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800';
   };
 
@@ -112,11 +127,17 @@ function ProductCard({ product, delay = '100ms' }) {
       style={{ transitionDelay: delay }}
     >
       <a href={`/product/${product._id}`} className="relative aspect-[3/4] overflow-hidden bg-stone-100 block">
-        <img
-          src={getProductImage()}
-          alt={product.name}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
+        {getProductImage() ? (
+          <img
+            src={getProductImage()}
+            alt={product.name}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-stone-200">
+            <Package className="w-12 h-12 text-stone-400" />
+          </div>
+        )}
         
         {/* Stock Badge - Subtle */}
         {isInStock && (

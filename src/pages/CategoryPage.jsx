@@ -236,11 +236,26 @@ function CategoryProductCard({ product }) {
   const { showToast } = useToast();
 
   const getProductImage = () => {
+    // Önce isPrimary olan görseli bul
+    if (product.images && product.images.length > 0) {
+      const primaryImage = product.images.find(img => img.isPrimary === true);
+      if (primaryImage) {
+        if (primaryImage.mediumUrl) return primaryImage.mediumUrl;
+        if (primaryImage.thumbnailUrl) return primaryImage.thumbnailUrl;
+        if (primaryImage.originalUrl) return primaryImage.originalUrl;
+      }
+      // İlk görseli kullan
+      const firstImage = product.images[0];
+      if (firstImage.mediumUrl) return firstImage.mediumUrl;
+      if (firstImage.thumbnailUrl) return firstImage.thumbnailUrl;
+      if (firstImage.originalUrl) return firstImage.originalUrl;
+    }
+    
+    // Cover image kullan
     if (product.coverImage?.mediumUrl) return product.coverImage.mediumUrl;
     if (product.coverImage?.thumbnailUrl) return product.coverImage.thumbnailUrl;
-    if (product.images && product.images.length > 0) {
-      return product.images[0].mediumUrl || product.images[0].thumbnailUrl;
-    }
+    if (product.coverImage?.originalUrl) return product.coverImage.originalUrl;
+    
     return 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800';
   };
 

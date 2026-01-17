@@ -1,6 +1,7 @@
 import React from 'react';
-import { ArrowRight, Package } from 'lucide-react';
+import { ArrowRight, Package, Folder } from 'lucide-react';
 import { useCatalog } from '../../context/CatalogContext';
+import { getCategoryImageUrl } from '../../utils/imageHelpers';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 
 function CategoriesSection() {
@@ -69,9 +70,56 @@ function CategoryCard({ category, delay = '100ms' }) {
   };
   
   const productCount = getCategoryProductCount(category);
-  const imageUrl = category.image || 'https://images.unsplash.com/photo-1497215842964-222b430dc094?q=80&w=800';
+  const imageUrl = getCategoryImageUrl(category, 'medium');
   const categoryUrl = `/category/${category._id}`;
+  const hasImage = imageUrl !== null;
 
+  // Görsel olmayan kategoriler için farklı kart tasarımı
+  if (!hasImage) {
+    return (
+      <a
+        href={categoryUrl}
+        ref={revealRef}
+        className="group relative block rounded-xl bg-gradient-to-br from-stone-50 to-stone-100 border-2 border-dashed border-stone-300 hover:border-red-300 hover:shadow-md transition-all duration-300 reveal-up"
+        style={{ transitionDelay: delay }}
+      >
+        <div className="p-6 md:p-8 flex flex-col items-center text-center min-h-[280px] justify-center">
+          {/* Icon */}
+          <div className="mb-4 w-16 h-16 rounded-full bg-stone-200 group-hover:bg-red-100 flex items-center justify-center transition-colors duration-300">
+            <Folder className="w-8 h-8 text-stone-500 group-hover:text-red-600 transition-colors" />
+          </div>
+          
+          {/* Title */}
+          <h3 className="text-xl font-serif font-semibold text-stone-900 mb-2 group-hover:text-red-600 transition-colors">
+            {category.name}
+          </h3>
+          
+          {/* Description */}
+          <p className="text-sm text-stone-600 mb-4 max-w-xs">
+            {category.description || 'Kurumsal ihtiyaçlarınıza özel çözümler'}
+          </p>
+          
+          {/* Product Count */}
+          {productCount > 0 && (
+            <div className="mb-4">
+              <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm text-stone-700 text-xs font-semibold px-3 py-1.5 rounded-full border border-stone-200">
+                <Package className="w-3.5 h-3.5" />
+                <span>{productCount} Ürün</span>
+              </div>
+            </div>
+          )}
+          
+          {/* CTA */}
+          <div className="flex items-center gap-1 text-red-600 font-semibold text-sm group-hover:gap-2 transition-all mt-auto">
+            <span>İncele</span>
+            <ArrowRight className="w-4 h-4" />
+          </div>
+        </div>
+      </a>
+    );
+  }
+
+  // Görsel olan kategoriler için mevcut tasarım
   return (
     <a
       href={categoryUrl}

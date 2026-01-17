@@ -1,19 +1,29 @@
 import React from 'react';
 import { ArrowRight, ShoppingCart, ChevronRight, Users, Coffee, Building2, Briefcase } from 'lucide-react';
-import { PRODUCTS, CATEGORIES } from '../utils/constants';
+import { useCatalog } from '../context/CatalogContext';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
+import { getProductImageUrl } from '../utils/imageHelpers';
+import { formatPrice } from '../utils/priceHelpers';
 import useIntersectionObserver from '../hooks/useIntersectionObserver';
 
 function MeetingCategoryPage() {
   const { addToCart } = useCart();
   const { showToast } = useToast();
+  const { getAllCategories, getProductsByCategoryId, loading } = useCatalog();
   
-  // Get meeting & shared space category
-  const meetingCategory = CATEGORIES.find(c => c.title === 'Toplantı & Ortak Alan') || CATEGORIES[2];
+  // Toplantı kategorisini bul
+  const allCategories = getAllCategories();
+  const meetingCategory = allCategories.find(c => 
+    c.name?.toLowerCase().includes('toplantı') || 
+    c.name?.toLowerCase().includes('meeting') ||
+    c.name?.toLowerCase().includes('ortak')
+  );
   
-  // Filter meeting products
-  const meetingProducts = PRODUCTS.filter(p => p.category === 'Toplantı & Ortak Alan');
+  // Kategori ID'si varsa ürünleri getir
+  const meetingProducts = meetingCategory 
+    ? getProductsByCategoryId(meetingCategory._id)
+    : [];
 
   // Usage scenarios
   const usageScenarios = [
@@ -54,16 +64,16 @@ function MeetingCategoryPage() {
             <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
             <a href="/products" className="hover:text-stone-900 transition-colors">Kategoriler</a>
             <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
-            <span className="text-stone-900 font-medium">{meetingCategory.title}</span>
+            <span className="text-stone-900 font-medium">{meetingCategory?.name || 'Toplantı & Ortak Alan'}</span>
           </nav>
           
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
               <h1 className="text-3xl md:text-4xl font-serif text-stone-900 mb-2">
-                {meetingCategory.title}
+                {meetingCategory?.name || 'Toplantı & Ortak Alan'}
               </h1>
               <p className="text-stone-600 max-w-2xl text-sm md:text-base">
-                {meetingCategory.subtitle}. Toplantı odaları, bekleme alanları ve ortak çalışma mekanları için mobilya çözümleri.
+                {meetingCategory?.description || 'Toplantı odaları, bekleme alanları ve ortak çalışma mekanları için mobilya çözümleri.'}
               </p>
             </div>
             <div className="text-stone-500 text-sm font-medium">
@@ -112,24 +122,27 @@ function MeetingCategoryPage() {
             </div>
           </div>
           
+          {loading ? (
+            <div className="text-center py-16 text-stone-600">Ürünler yükleniyor...</div>
+          ) : meetingProducts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {meetingProducts.map((product, index) => {
               const productRef = useIntersectionObserver();
               
               return (
                 <div
-                  key={product.id}
+                  key={product._id}
                   ref={productRef}
                   className="group bg-white rounded-lg overflow-hidden border border-stone-200 hover:border-red-300 hover:shadow-md transition-all duration-300 flex flex-col reveal-up"
                   style={{ transitionDelay: `${index * 40}ms` }}
                 >
-                  <a href={`/product/${product.id}`} className="relative aspect-[4/3] overflow-hidden bg-stone-100 block">
+                  <a href={`/product/${product._id}`} className="relative aspect-[4/3] overflow-hidden bg-stone-100 block">
                     <img
-                      src={product.image}
+                      src={getProductImageUrl(product, 'medium')}
                       alt={product.name}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    {product.inStock && (
+                    {product.stock && product.stock > 0 && (
                       <div className="absolute top-2 left-2">
                         <div className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">
                           STOKTA
@@ -138,27 +151,26 @@ function MeetingCategoryPage() {
                     )}
                   </a>
                   <div className="p-4 flex flex-col flex-1">
-                    <a href={`/product/${product.id}`}>
+                    <a href={`/product/${product._id}`}>
                       <h3 className="font-serif text-base font-medium text-stone-900 mb-1 group-hover:text-red-600 transition-colors line-clamp-1">
                         {product.name}
                       </h3>
                     </a>
                     <p className="text-xs text-stone-500 mb-3 line-clamp-1">
-                      {product.features && product.features[0]}
+                      {product.description || 'Kurumsal ihtiyaçlarınıza özel çözümler'}
                     </p>
                     
                     <div className="mt-auto pt-3 border-t border-stone-100">
                       <div className="flex items-center justify-between gap-3 mb-3">
                         <div>
-                          <div className="font-bold text-red-600">{product.price}</div>
-                          {product.originalPrice && (
-                            <div className="text-xs text-stone-400 line-through">{product.originalPrice}</div>
-                          )}
+                          <div className="font-bold text-red-600">
+                            {formatPrice(product.price, product.currency)}
+                          </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
                         <a 
-                          href={`/product/${product.id}`}
+                          href={`/product/${product._id}`}
                           className="flex-1 text-center text-xs font-semibold text-white bg-red-600 px-3 py-2 rounded hover:bg-red-700 transition-colors"
                         >
                           Detay
@@ -167,7 +179,14 @@ function MeetingCategoryPage() {
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            addToCart(product);
+                            const cartProduct = {
+                              id: product._id,
+                              _id: product._id,
+                              name: product.name,
+                              price: formatPrice(product.price, product.currency),
+                              image: getProductImageUrl(product, 'medium'),
+                            };
+                            addToCart(cartProduct);
                             showToast(`${product.name} sepete eklendi!`, 'success');
                           }}
                           className="p-2 bg-stone-100 hover:bg-stone-200 rounded transition-colors"
@@ -182,6 +201,12 @@ function MeetingCategoryPage() {
               );
             })}
           </div>
+          ) : (
+            <div className="text-center py-16 text-stone-600">
+              <p className="mb-4">Bu kategoride ürün bulunamadı.</p>
+              <a href="/products" className="text-red-600 hover:text-red-700">Tüm Ürünleri Gör →</a>
+            </div>
+          )}
         </div>
 
         {/* 4. CTA to Products */}

@@ -3,6 +3,7 @@ import { Menu, X, Home, Search, Heart, ShoppingCart, ChevronDown, ArrowRight, Pa
 import { NAV_LINKS } from '../../utils/constants';
 import { useCatalog } from '../../context/CatalogContext';
 import { useCart } from '../../context/CartContext';
+import { getCategoryImageUrl } from '../../utils/imageHelpers';
 import { useScroll } from '../../hooks/useScroll';
 
 function Header() {
@@ -193,7 +194,6 @@ function Header() {
                             </h3>
                             <div className="grid grid-cols-1 gap-2">
                               {rootCategories.map((category) => {
-                                const categoryImage = category.image || 'https://images.unsplash.com/photo-1497215842964-222b430dc094?q=80&w=800';
                                 return (
                                 <a
                                   key={category._id}
@@ -202,11 +202,17 @@ function Header() {
                                   onClick={() => setIsCategoriesOpen(false)}
                                 >
                                   <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-stone-100 flex-shrink-0 border border-stone-100 group-hover:border-red-100">
-                                    <img
-                                      src={categoryImage}
-                                      alt={category.name}
-                                      className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300"
-                                    />
+                                    {getCategoryImageUrl(category, 'thumbnail') ? (
+                                      <img
+                                        src={getCategoryImageUrl(category, 'thumbnail')}
+                                        alt={category.name}
+                                        className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300"
+                                      />
+                                    ) : (
+                                      <div className="w-full h-full flex items-center justify-center bg-stone-200">
+                                        <Package className="w-6 h-6 text-stone-400" />
+                                      </div>
+                                    )}
                                   </div>
                                   <div className="flex-1 min-w-0">
                                     <div className="flex items-center justify-between mb-0.5">

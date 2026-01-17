@@ -1,19 +1,28 @@
 import React from 'react';
 import { ArrowRight, ShoppingCart, ChevronRight, Table, Users, Package, Square } from 'lucide-react';
-import { PRODUCTS, CATEGORIES } from '../utils/constants';
+import { useCatalog } from '../context/CatalogContext';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
+import { getProductImageUrl } from '../utils/imageHelpers';
+import { formatPrice } from '../utils/priceHelpers';
 import useIntersectionObserver from '../hooks/useIntersectionObserver';
 
 function OfficeCategoryPage() {
   const { addToCart } = useCart();
   const { showToast } = useToast();
+  const { getAllCategories, getProductsByCategoryId, loading } = useCatalog();
   
-  // Get office furniture category
-  const officeCategory = CATEGORIES.find(c => c.title === 'Ofis Mobilyaları') || CATEGORIES[0];
+  // Ofis kategorisini bul
+  const allCategories = getAllCategories();
+  const officeCategory = allCategories.find(c => 
+    c.name?.toLowerCase().includes('ofis') || 
+    c.name?.toLowerCase().includes('office')
+  );
   
-  // Filter office products
-  const officeProducts = PRODUCTS.filter(p => p.category === 'Ofis Mobilyaları');
+  // Kategori ID'si varsa ürünleri getir
+  const officeProducts = officeCategory 
+    ? getProductsByCategoryId(officeCategory._id)
+    : [];
   
   // Featured products (first 6)
   const featuredProducts = officeProducts.slice(0, 6);
@@ -65,16 +74,16 @@ function OfficeCategoryPage() {
             <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
             <a href="/products" className="hover:text-stone-900 transition-colors">Kategoriler</a>
             <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
-            <span className="text-stone-900 font-medium">{officeCategory.title}</span>
+            <span className="text-stone-900 font-medium">{officeCategory?.name || 'Ofis Mobilyaları'}</span>
           </nav>
           
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
               <h1 className="text-4xl md:text-5xl font-serif text-stone-900 mb-3">
-                {officeCategory.title}
+                {officeCategory?.name || 'Ofis Mobilyaları'}
               </h1>
               <p className="text-stone-600 max-w-2xl text-base md:text-lg">
-                {officeCategory.subtitle}. Geniş ürün yelpazesi, stoktan hızlı teslimat ve profesyonel kurulum hizmeti.
+                {officeCategory?.description || 'Geniş ürün yelpazesi, stoktan hızlı teslimat ve profesyonel kurulum hizmeti.'}
               </p>
             </div>
             <div className="text-stone-500 text-sm font-medium">
@@ -144,24 +153,27 @@ function OfficeCategoryPage() {
             </a>
           </div>
           
+          {loading ? (
+            <div className="text-center py-16 text-stone-600">Ürünler yükleniyor...</div>
+          ) : featuredProducts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {featuredProducts.map((product, index) => {
               const productRef = useIntersectionObserver();
               
               return (
                 <div
-                  key={product.id}
+                  key={product._id}
                   ref={productRef}
                   className="group bg-white rounded-xl overflow-hidden border border-stone-200 hover:border-red-300 hover:shadow-lg transition-all duration-300 flex flex-col reveal-up"
                   style={{ transitionDelay: `${index * 50}ms` }}
                 >
-                  <a href={`/product/${product.id}`} className="relative aspect-[4/3] overflow-hidden bg-stone-100 block">
+                  <a href={`/product/${product._id}`} className="relative aspect-[4/3] overflow-hidden bg-stone-100 block">
                     <img
-                      src={product.image}
+                      src={getProductImageUrl(product, 'medium')}
                       alt={product.name}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    {product.inStock && (
+                    {product.stock && product.stock > 0 && (
                       <div className="absolute top-3 left-3">
                         <div className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">
                           STOKTA
@@ -170,27 +182,33 @@ function OfficeCategoryPage() {
                     )}
                   </a>
                   <div className="p-4 flex flex-col flex-1">
-                    <a href={`/product/${product.id}`}>
+                    <a href={`/product/${product._id}`}>
                       <h3 className="font-serif text-lg font-medium text-stone-900 mb-1 group-hover:text-red-600 transition-colors truncate">
                         {product.name}
                       </h3>
                     </a>
                     <p className="text-xs text-stone-500 mb-3 line-clamp-1">
-                      {product.features && product.features[0]}
+                      {product.description || 'Kurumsal ihtiyaçlarınıza özel çözümler'}
                     </p>
                     <div className="mt-auto flex items-center justify-between gap-3">
                       <div>
-                        <div className="font-bold text-red-600">{product.price}</div>
-                        {product.originalPrice && (
-                          <div className="text-xs text-stone-400 line-through">{product.originalPrice}</div>
-                        )}
+                        <div className="font-bold text-red-600">
+                          {formatPrice(product.price, product.currency)}
+                        </div>
                       </div>
                       <div className="flex items-center gap-2">
                         <button 
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            addToCart(product);
+                            const cartProduct = {
+                              id: product._id,
+                              _id: product._id,
+                              name: product.name,
+                              price: formatPrice(product.price, product.currency),
+                              image: getProductImageUrl(product, 'medium'),
+                            };
+                            addToCart(cartProduct);
                             showToast(`${product.name} sepete eklendi!`, 'success');
                           }}
                           className="text-xs font-semibold text-stone-900 bg-stone-100 hover:bg-stone-200 px-3 py-1.5 rounded transition-colors flex items-center gap-1"
@@ -198,7 +216,7 @@ function OfficeCategoryPage() {
                           <ShoppingCart className="w-3 h-3" />
                         </button>
                         <a 
-                          href={`/product/${product.id}`}
+                          href={`/product/${product._id}`}
                           className="text-xs font-semibold text-red-600 border border-red-100 px-3 py-1.5 rounded hover:bg-red-50 transition-colors"
                         >
                           Detay
@@ -210,6 +228,12 @@ function OfficeCategoryPage() {
               );
             })}
           </div>
+          ) : (
+            <div className="text-center py-16 text-stone-600">
+              <p className="mb-4">Bu kategoride ürün bulunamadı.</p>
+              <a href="/products" className="text-red-600 hover:text-red-700">Tüm Ürünleri Gör →</a>
+            </div>
+          )}
         </div>
 
         {/* 4. CTA to View All Office Products */}

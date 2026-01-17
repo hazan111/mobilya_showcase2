@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { 
   CheckCircle, Truck, Wrench, Shield, ArrowRight, 
-  ChevronRight, Star, ShoppingCart, MessageSquare 
+  ChevronRight, Star, ShoppingCart, MessageSquare, Package
 } from 'lucide-react';
 import { useCatalog } from '../context/CatalogContext';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
+import { getProductAllImages } from '../utils/imageHelpers';
 
 function ProductDetailPage() {
   const [activeImage, setActiveImage] = useState(0);
@@ -25,28 +26,9 @@ function ProductDetailPage() {
 
   // Helper functions
   const getProductImages = () => {
-    if (!product) return [];
-    const images = [];
-    
-    // Cover image
-    if (product.coverImage?.originalUrl) {
-      images.push(product.coverImage.originalUrl);
-    } else if (product.coverImage?.mediumUrl) {
-      images.push(product.coverImage.mediumUrl);
-    }
-    
-    // Additional images
-    if (product.images && product.images.length > 0) {
-      product.images.forEach(img => {
-        if (img.originalUrl && !images.includes(img.originalUrl)) {
-          images.push(img.originalUrl);
-        } else if (img.mediumUrl && !images.includes(img.mediumUrl)) {
-          images.push(img.mediumUrl);
-        }
-      });
-    }
-    
-    return images.length > 0 ? images : ['https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1600'];
+    // imageHelpers'daki getProductAllImages fonksiyonunu kullan
+    // Bu fonksiyon URL normalizasyonu yapıyor (backend base URL ekleme)
+    return getProductAllImages(product);
   };
 
   const formatPrice = (price, currency = 'TRY') => {
@@ -60,15 +42,15 @@ function ProductDetailPage() {
     }).format(numPrice);
   };
 
-  // Özellikler - Features array'inden highlighted veya önemli olanları al
+  // Özellikler - Features array'inden özellikleri al
   const getProductFeatures = () => {
     if (!product || !product.features || product.features.length === 0) {
       return [];
     }
     
-    // isHighlighted olanları veya ilk birkaç özelliği göster
+    // name veya value'su olan özellikleri göster
     return product.features
-      .filter(f => f.isHighlighted || f.name) // Highlighted veya name'i olanları filtrele
+      .filter(f => f.name || f.value) // name veya value'su olanları filtrele
       .map(f => f.name || f.value)
       .filter((v, i, self) => self.indexOf(v) === i) // Duplicate'leri kaldır
       .slice(0, 5); // Maksimum 5 özellik göster
@@ -195,11 +177,17 @@ function ProductDetailPage() {
           {/* Left: Product Images */}
           <div className="lg:col-span-7 space-y-4">
             <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-stone-100 shadow-sm border border-stone-100">
-              <img 
-                src={productImages[activeImage] || productImages[0]} 
-                alt={product.name} 
-                className="w-full h-full object-cover"
-              />
+              {productImages && productImages.length > 0 && productImages[activeImage] ? (
+                <img 
+                  src={productImages[activeImage] || productImages[0]} 
+                  alt={product.name} 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-stone-200">
+                  <Package className="w-16 h-16 text-stone-400" />
+                </div>
+              )}
               {isInStock && (
                 <div className="absolute top-4 left-4 bg-green-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
                   STOKTA

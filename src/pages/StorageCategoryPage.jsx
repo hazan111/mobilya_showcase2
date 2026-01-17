@@ -1,19 +1,28 @@
 import React from 'react';
 import { ArrowRight, ShoppingCart, ChevronRight, Package, Shield, Box, Lock } from 'lucide-react';
-import { PRODUCTS, CATEGORIES } from '../utils/constants';
+import { useCatalog } from '../context/CatalogContext';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
+import { getProductImageUrl } from '../utils/imageHelpers';
+import { formatPrice } from '../utils/priceHelpers';
 import useIntersectionObserver from '../hooks/useIntersectionObserver';
 
 function StorageCategoryPage() {
   const { addToCart } = useCart();
   const { showToast } = useToast();
+  const { getCategoryById, getProductsByCategoryId, getAllCategories, loading } = useCatalog();
   
-  // Get storage category
-  const storageCategory = CATEGORIES.find(c => c.title === 'Depolama') || CATEGORIES[3];
+  // Depolama kategorisini bul (API'den gelen kategoriler arasında)
+  const allCategories = getAllCategories();
+  const storageCategory = allCategories.find(c => 
+    c.name?.toLowerCase().includes('depolama') || 
+    c.name?.toLowerCase().includes('storage')
+  );
   
-  // Filter storage products
-  const storageProducts = PRODUCTS.filter(p => p.category === 'Depolama');
+  // Kategori ID'si varsa ürünleri getir
+  const storageProducts = storageCategory 
+    ? getProductsByCategoryId(storageCategory._id)
+    : [];
 
   // Key benefits
   const keyBenefits = [
@@ -59,7 +68,7 @@ function StorageCategoryPage() {
                 Depolama Sistemleri
               </h1>
               <p className="text-stone-600 max-w-2xl text-sm md:text-base">
-                {storageCategory.subtitle}. Arşiv, dosya ve evrak organizasyonu için depolama çözümleri.
+                {storageCategory?.description || 'Arşiv, dosya ve evrak organizasyonu için depolama çözümleri.'}
               </p>
             </div>
             <div className="text-stone-500 text-sm font-medium">
@@ -100,24 +109,27 @@ function StorageCategoryPage() {
             </div>
           </div>
           
+          {loading ? (
+            <div className="text-center py-16 text-stone-600">Ürünler yükleniyor...</div>
+          ) : storageProducts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {storageProducts.map((product, index) => {
               const productRef = useIntersectionObserver();
               
               return (
                 <div
-                  key={product.id}
+                  key={product._id}
                   ref={productRef}
                   className="group bg-white rounded-lg overflow-hidden border border-stone-200 hover:border-red-300 hover:shadow-md transition-all duration-300 flex flex-col reveal-up"
                   style={{ transitionDelay: `${index * 40}ms` }}
                 >
-                  <a href={`/product/${product.id}`} className="relative aspect-[4/3] overflow-hidden bg-stone-100 block">
+                  <a href={`/product/${product._id}`} className="relative aspect-[4/3] overflow-hidden bg-stone-100 block">
                     <img
-                      src={product.image}
+                      src={getProductImageUrl(product, 'medium')}
                       alt={product.name}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    {product.inStock && (
+                    {product.stock && product.stock > 0 && (
                       <div className="absolute top-2 left-2">
                         <div className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">
                           STOKTA
@@ -126,38 +138,26 @@ function StorageCategoryPage() {
                     )}
                   </a>
                   <div className="p-4 flex flex-col flex-1">
-                    <a href={`/product/${product.id}`}>
+                    <a href={`/product/${product._id}`}>
                       <h3 className="font-serif text-base font-medium text-stone-900 mb-2 group-hover:text-red-600 transition-colors">
                         {product.name}
                       </h3>
                     </a>
                     <p className="text-xs text-stone-500 mb-3 line-clamp-2">
-                      {product.features && product.features.join(' • ')}
+                      {product.description || 'Kurumsal ihtiyaçlarınıza özel çözümler'}
                     </p>
-                    
-                    {/* Capacity & Durability Info */}
-                    {product.specs && product.specs.length > 0 && (
-                      <div className="mb-3 space-y-1">
-                        {product.specs.slice(0, 1).map((spec, idx) => (
-                          <div key={idx} className="text-xs text-stone-600">
-                            <span className="font-medium">{spec.label}:</span> {spec.value}
-                          </div>
-                        ))}
-                      </div>
-                    )}
                     
                     <div className="mt-auto pt-3 border-t border-stone-100">
                       <div className="flex items-center justify-between gap-3 mb-3">
                         <div>
-                          <div className="font-bold text-red-600">{product.price}</div>
-                          {product.originalPrice && (
-                            <div className="text-xs text-stone-400 line-through">{product.originalPrice}</div>
-                          )}
+                          <div className="font-bold text-red-600">
+                            {formatPrice(product.price, product.currency)}
+                          </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
                         <a 
-                          href={`/product/${product.id}`}
+                          href={`/product/${product._id}`}
                           className="flex-1 text-center text-xs font-semibold text-white bg-red-600 px-3 py-2 rounded hover:bg-red-700 transition-colors"
                         >
                           Detay
@@ -166,7 +166,14 @@ function StorageCategoryPage() {
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            addToCart(product);
+                            const cartProduct = {
+                              id: product._id,
+                              _id: product._id,
+                              name: product.name,
+                              price: formatPrice(product.price, product.currency),
+                              image: getProductImageUrl(product, 'medium'),
+                            };
+                            addToCart(cartProduct);
                             showToast(`${product.name} sepete eklendi!`, 'success');
                           }}
                           className="p-2 bg-stone-100 hover:bg-stone-200 rounded transition-colors"
@@ -181,6 +188,12 @@ function StorageCategoryPage() {
               );
             })}
           </div>
+          ) : (
+            <div className="text-center py-16 text-stone-600">
+              <p className="mb-4">Bu kategoride ürün bulunamadı.</p>
+              <a href="/products" className="text-red-600 hover:text-red-700">Tüm Ürünleri Gör →</a>
+            </div>
+          )}
         </div>
 
         {/* 4. CTA Section */}
