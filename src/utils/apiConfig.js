@@ -2,7 +2,7 @@
 export const API_CONFIG = {
   // Backend API base URL - değiştirilebilir
   // Development'ta Vite proxy kullanıyoruz, production'da tam URL gerekebilir
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? '' : 'http://localhost:3000'),
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? '' : 'http://localhost:3002'),
   
   // API endpoints
   ENDPOINTS: {
