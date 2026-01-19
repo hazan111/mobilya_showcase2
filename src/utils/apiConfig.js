@@ -11,4 +11,4 @@ export const API_CONFIG = {
 };
 
 // Default branch ID (şimdilik sabit)
-export const DEFAULT_BRANCH_ID = '6965a7dbd700a95dcc354217';
+export const DEFAULT_BRANCH_ID = '696d35383ce2a4ecef8a1868';
