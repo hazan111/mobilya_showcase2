@@ -3,14 +3,10 @@
  * API'den gelen product verilerinden görsel URL'lerini çıkarır
  */
 
-// Backend API base URL - production'da gerekli
+// Backend API base URL - development ve production'da production domain kullanılıyor
 const getBackendBaseUrl = () => {
-  // Development'ta Vite proxy kullanıyoruz, bu yüzden relative path yeterli
-  // Production'da environment variable'dan alınmalı
-  if (import.meta.env.DEV) {
-    return ''; // Vite proxy kullanılacak
-  }
-  return import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+  // Development ve production'da aynı production API kullanılıyor
+  return import.meta.env.VITE_API_BASE_URL || 'https://epanelapi.wmbyazilim.com';
 };
 
 /**

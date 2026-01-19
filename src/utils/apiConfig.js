@@ -1,8 +1,8 @@
 // API Configuration
 export const API_CONFIG = {
   // Backend API base URL - değiştirilebilir
-  // Development'ta Vite proxy kullanıyoruz (localhost:3002), production'da production domain kullanılıyor
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? '' : 'https://epanelapi.wmbyazilim.com'),
+  // Development ve production'da production domain kullanılıyor
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'https://epanelapi.wmbyazilim.com',
   
   // API endpoints
   ENDPOINTS: {
