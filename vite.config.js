@@ -8,12 +8,12 @@ export default defineConfig({
     open: true,
     proxy: {
       '/catalog': {
-        target: 'http://localhost:3000',
+        target: 'http://localhost:3002',
         changeOrigin: true,
         secure: false,
       },
       '/uploads': {
-        target: 'http://localhost:3000',
+        target: 'http://localhost:3002',
         changeOrigin: true,
         secure: false,
       }
