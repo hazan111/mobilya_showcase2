@@ -2,194 +2,254 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-primary: #292524;
+  --color-primary-hover: #1c1917;
+  --color-ink: #0c0a09;
+  --color-surface: #ebeae8;
+  --color-surface-elevated: #ffffff;
+  --radius-card: 0.75rem;
+  --radius-button: 0.5rem;
+  --shadow-soft: 0 1px 3px 0 rgba(0,0,0,0.04), 0 4px 12px -2px rgba(0,0,0,0.04);
+  --shadow-card: 0 1px 3px 0 rgba(0,0,0,0.05), 0 6px 20px -4px rgba(0,0,0,0.06);
+}
+
+html {
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
-    font-family: 'Inter', sans-serif;
-    background-color: #ffffff;
-    color: #1a1a1a;
-    cursor: none;
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--color-surface);
+  color: #1c1917;
+  font-size: 1rem;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Yatay kaydırma alanlarında scrollbar gizle (kategoriler vb.) */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Mobil: tablolar yatay kaydırılabilir */
+.table-scroll-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-left: -0.5rem;
+  margin-right: -0.5rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+.table-scroll-wrap table {
+  min-width: 320px;
+}
+
+/* Safe area - çentikli ekranlar (notch) */
+@supports (padding: env(safe-area-inset-top)) {
+  .safe-area-pt {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+  .safe-area-pb {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  .safe-area-pl {
+    padding-left: max(1rem, env(safe-area-inset-left));
+  }
+  .safe-area-pr {
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
 }
 
 .font-serif {
-    font-family: 'Cormorant Garamond', serif;
+  font-family: 'Cormorant Garamond', Georgia, serif;
 }
 
-/* Custom Cursor - Red to match brand */
-#cursor-dot, #cursor-outline {
-    position: fixed;
-    top: 0;
-    left: 0;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    z-index: 9999;
-    pointer-events: none;
+/* Selection */
+::selection {
+  background-color: rgba(41, 37, 36, 0.12);
+  color: #0c0a09;
 }
 
-#cursor-dot {
-    width: 8px;
-    height: 8px;
-    background-color: #dc2626; /* Red-600 */
-}
-
-#cursor-outline {
-    width: 40px;
-    height: 40px;
-    border: 1px solid rgba(220, 38, 38, 0.5);
-    transition: width 0.2s, height 0.2s, background-color 0.2s;
-}
-
-body:hover #cursor-outline {
-    width: 50px;
-    height: 50px;
-    background-color: rgba(220, 38, 38, 0.05);
-}
-
-/* Scroll Progress - Red Gradient */
+/* Scroll Progress */
 .scroll-progress {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #dc2626, #991b1b); /* Red to Dark Red */
-    z-index: 100;
-    width: 0%;
-    transition: width 0.1s;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: var(--color-primary);
+  z-index: 100;
+  width: 0%;
+  transition: width 0.12s ease-out;
 }
 
 /* Animations */
 .reveal-up {
-    opacity: 0;
-    transform: translateY(40px);
-    transition: all 1s cubic-bezier(0.2, 1, 0.3, 1);
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .reveal-up.active {
-    opacity: 1;
-    transform: translateY(0);
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .reveal-scale {
-    opacity: 0;
-    transform: scale(0.95);
-    transition: all 1.2s cubic-bezier(0.2, 1, 0.3, 1);
+  opacity: 0;
+  transform: scale(0.98);
+  transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .reveal-scale.active {
-    opacity: 1;
-    transform: scale(1);
+  opacity: 1;
+  transform: scale(1);
 }
 
 /* Magnetic Button Base */
 .magnetic-wrap {
-    display: inline-block;
-    position: relative;
+  display: inline-block;
+  position: relative;
 }
 
 .magnetic-area {
-    position: absolute;
-    top: -20px;
-    left: -20px;
-    right: -20px;
-    bottom: -20px;
-    z-index: 10;
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  z-index: 10;
 }
 
-/* Shine Effect */
+/* Shine Effect - refined */
 .shine-hover {
-    position: relative;
-    overflow: hidden;
+  position: relative;
+  overflow: hidden;
 }
 
 .shine-hover::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 50%;
-    height: 100%;
-    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
-    transform: skewX(-25deg);
-    transition: none;
-    z-index: 2;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%);
+  transform: skewX(-22deg);
+  transition: none;
+  z-index: 2;
 }
 
 .shine-hover:hover::before {
-    left: 150%;
-    transition: 0.7s ease-in-out;
+  left: 150%;
+  transition: 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Glass Morphism */
+/* Glass Header */
 .glass-panel {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(220, 38, 38, 0.1);
+  background: rgba(235, 234, 232, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-/* Image Hover Parallax */
+/* Image hover */
 .img-container {
-    overflow: hidden;
+  overflow: hidden;
 }
 
 .img-container img {
-    transition: transform 0.7s cubic-bezier(0.2, 1, 0.3, 1);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .group:hover .img-container img {
-    transform: scale(1.1);
+  transform: scale(1.06);
 }
 
-/* Discount Badge Shape */
-.price-pill {
-    clip-path: polygon(10% 0, 100% 0, 100% 100%, 10% 100%, 0% 50%);
+/* Utility: overline label */
+.overline {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: inherit;
 }
 
-/* Slow spin animation */
-@keyframes spin-slow {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.animate-spin-slow {
-    animation: spin-slow 8s linear infinite;
-}
-
-/* Dropdown slide from left animation */
-.dropdown-slide-right {
-    animation: slideInRight 0.3s cubic-bezier(0.2, 1, 0.3, 1);
-}
-
-/* Mega Menu Fade Up Animation */
+/* Dropdown / overlay animations */
 .dropdown-fade-up {
-    animation: fadeUp 0.3s cubic-bezier(0.2, 1, 0.3, 1);
-    transform-origin: top center;
+  animation: fadeUp 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: top center;
 }
 
 @keyframes fadeUp {
-    from {
-        opacity: 0;
-        transform: translate(-50%, 10px);
-    }
-    to {
-        opacity: 1;
-        transform: translate(-50%, 0);
-    }
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }
 
 @keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(100px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .animate-slide-in-right {
-    animation: slideInRight 0.3s cubic-bezier(0.2, 1, 0.3, 1);
+  animation: slideInRight 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Sort dropdown panel */
+@keyframes sortDropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sort-dropdown-panel {
+  animation: sortDropdownIn 0.2s ease-out;
+}
+
+.sort-dropdown-panel > div::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sort-dropdown-panel > div::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sort-dropdown-panel > div::-webkit-scrollbar-thumb {
+  background: #d6d3d1;
+  border-radius: 3px;
+}
+
+.sort-dropdown-panel > div::-webkit-scrollbar-thumb:hover {
+  background: #a8a29e;
+}
+
+/* Price pill (legacy support) */
+.price-pill {
+  clip-path: polygon(10% 0, 100% 0, 100% 100%, 10% 100%, 0% 50%);
 }

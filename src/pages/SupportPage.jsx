@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChevronRight, Shield, Wrench, Package, Headphones, CheckCircle2, Phone, Mail, Clock, ArrowRight } from 'lucide-react';
-import { CONTACT_INFO } from '../utils/constants';
+import { CONTACT_INFO, ROUTES, LABELS } from '../utils/constants';
 import useIntersectionObserver from '../hooks/useIntersectionObserver';
 
 function SupportPage() {
@@ -53,13 +53,13 @@ function SupportPage() {
   ];
 
   return (
-    <div className="pt-24 pb-12 px-4 md:px-8 bg-white min-h-screen">
+    <div className="pt-24 pb-12 px-4 md:px-8 bg-surface min-h-screen">
       <div className="max-w-6xl mx-auto">
         
         {/* Header */}
         <div className="mb-10 border-b border-stone-100 pb-8">
           <nav className="flex items-center text-sm text-stone-500 mb-6 overflow-x-auto whitespace-nowrap">
-            <a href="/" className="hover:text-stone-900 transition-colors">Ana Sayfa</a>
+            <a href={ROUTES.HOME} className="hover:text-stone-900 transition-colors">{LABELS.HOME}</a>
             <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
             <span className="text-stone-900 font-medium">Satış Sonrası Destek</span>
           </nav>
@@ -91,8 +91,8 @@ function SupportPage() {
                   className="bg-stone-50 rounded-lg border border-stone-200 p-5 text-center reveal-up"
                   style={{ transitionDelay: `${index * 50}ms` }}
                 >
-                  <div className="w-12 h-12 bg-red-50 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <ItemIcon className="w-6 h-6 text-red-600" />
+                  <div className="w-12 h-12 bg-primary-50 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <ItemIcon className="w-6 h-6 text-primary-600" />
                   </div>
                   <h3 className="font-semibold text-stone-900 mb-2 text-sm">
                     {item.title}
@@ -114,8 +114,8 @@ function SupportPage() {
           <div className="grid md:grid-cols-2 gap-6">
             <div className="bg-stone-50 rounded-lg border border-stone-200 p-6">
               <div className="flex items-start gap-4 mb-4">
-                <div className="w-12 h-12 bg-red-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Shield className="w-6 h-6 text-red-600" />
+                <div className="w-12 h-12 bg-primary-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Shield className="w-6 h-6 text-primary-600" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-stone-900 mb-2">2-3 Yıl Kurumsal Garanti</h3>
@@ -129,14 +129,14 @@ function SupportPage() {
             
             <div className="bg-stone-50 rounded-lg border border-stone-200 p-6">
               <div className="flex items-start gap-4 mb-4">
-                <div className="w-12 h-12 bg-red-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Package className="w-6 h-6 text-red-600" />
+                <div className="w-12 h-12 bg-primary-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Package className="w-6 h-6 text-primary-600" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-stone-900 mb-2">Yedek Parça Desteği</h3>
                   <p className="text-sm text-stone-600 leading-relaxed">
                     Garanti süresi bitiminden sonra 5 yıl boyunca yedek parça temin garantisi. 
-                    Tüm ürünlerimiz için yedek parça stoklarımız mevcuttur.
+                    Tüm ürünlerimiz için yedek parça temini yapılmaktadır.
                   </p>
                 </div>
               </div>
@@ -160,7 +160,7 @@ function SupportPage() {
                   className="bg-white rounded-lg border border-stone-200 p-5 reveal-up"
                   style={{ transitionDelay: `${index * 50}ms` }}
                 >
-                  <div className="w-10 h-10 bg-red-600 text-white rounded-lg flex items-center justify-center font-bold mb-3">
+                  <div className="w-10 h-10 bg-primary-600 text-white rounded-lg flex items-center justify-center font-bold mb-3">
                     {process.step}
                   </div>
                   <h3 className="font-semibold text-stone-900 mb-2 text-sm">
@@ -189,12 +189,12 @@ function SupportPage() {
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-5 border border-white/20">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
+                  <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
                     <Phone className="w-5 h-5" />
                   </div>
                   <div>
                     <div className="text-xs text-stone-400 uppercase tracking-wide mb-1">Telefon</div>
-                    <a href={`tel:${CONTACT_INFO.phone}`} className="text-lg font-semibold hover:text-red-400 transition-colors">
+                    <a href={`tel:${CONTACT_INFO.phone}`} className="text-lg font-semibold hover:text-primary-400 transition-colors">
                       {CONTACT_INFO.phone}
                     </a>
                   </div>
@@ -207,12 +207,12 @@ function SupportPage() {
               
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-5 border border-white/20">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
+                  <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
                     <Mail className="w-5 h-5" />
                   </div>
                   <div>
                     <div className="text-xs text-stone-400 uppercase tracking-wide mb-1">E-posta</div>
-                    <a href={`mailto:${CONTACT_INFO.email}`} className="text-lg font-semibold hover:text-red-400 transition-colors break-all">
+                    <a href={`mailto:${CONTACT_INFO.email}`} className="text-lg font-semibold hover:text-primary-400 transition-colors break-all">
                       {CONTACT_INFO.email}
                     </a>
                   </div>
@@ -225,8 +225,8 @@ function SupportPage() {
             
             <div className="text-center">
               <a
-                href="/contact"
-                className="inline-flex items-center gap-2 bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors"
+                href={ROUTES.CONTACT}
+                className="inline-flex items-center gap-2 bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors"
               >
                 İletişim Formu
                 <ArrowRight className="w-5 h-5" />

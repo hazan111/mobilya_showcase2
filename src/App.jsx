@@ -1,12 +1,6 @@
 import React from 'react';
 import Layout from './components/layout/Layout';
-import HeroSection from './components/sections/HeroSection';
-import CategoriesSection from './components/sections/CategoriesSection';
-import ProductsSection from './components/sections/ProductsSection';
-import AboutSection from './components/sections/AboutSection';
-import SupportSection from './components/sections/NewsletterSection';
-import StoresSection from './components/sections/StoresSection';
-import CtaSection from './components/sections/CtaSection';
+import VitrinPage from './pages/VitrinPage';
 import CategoryPage from './pages/CategoryPage';
 import OfficeCategoryPage from './pages/OfficeCategoryPage';
 import ExecutiveCategoryPage from './pages/ExecutiveCategoryPage';
@@ -15,8 +9,8 @@ import StorageCategoryPage from './pages/StorageCategoryPage';
 import CustomProjectPage from './pages/CustomProjectPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import StoresPage from './pages/StoresPage';
-import ContactPage from './pages/ContactPage';
 import AboutPage from './pages/AboutPage';
+import BizeUlasinPage from './pages/BizeUlasinPage';
 import ProjectsPage from './pages/ProjectsPage';
 import ReferencesPage from './pages/ReferencesPage';
 import CareerPage from './pages/CareerPage';
@@ -104,18 +98,18 @@ function App() {
     );
   }
 
-  if (path === '/contact') {
-    return (
-      <Layout>
-        <ContactPage />
-      </Layout>
-    );
-  }
-
   if (path === '/about') {
     return (
       <Layout>
         <AboutPage />
+      </Layout>
+    );
+  }
+
+  if (path === '/bize-ulasin' || path === '/contact') {
+    return (
+      <Layout>
+        <BizeUlasinPage />
       </Layout>
     );
   }
@@ -208,17 +202,10 @@ function App() {
     );
   }
 
+  // Varsayılan: Vitrin sayfası (ana sayfa)
   return (
     <Layout>
-      <main>
-        <HeroSection />
-        <CategoriesSection />
-        <ProductsSection />
-        <AboutSection />
-        <SupportSection />
-        <StoresSection />
-        <CtaSection />
-      </main>
+      <VitrinPage />
     </Layout>
   );
 }

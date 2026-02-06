@@ -25,42 +25,40 @@ function HeroSection() {
   return (
     <section
       id="home"
-      className="relative pt-24 pb-8 md:pt-28 md:pb-12 px-4 md:px-8 bg-white overflow-hidden"
+      className="relative pt-24 sm:pt-28 pb-10 sm:pb-12 md:pt-32 md:pb-16 px-4 sm:px-6 md:px-8 bg-surface overflow-hidden"
     >
-      {/* Background Blob */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-50 rounded-full blur-[120px] pointer-events-none opacity-50"></div>
+      <div className="absolute top-0 right-0 w-[280px] h-[280px] sm:w-[360px] sm:h-[360px] bg-primary-200 rounded-full blur-[80px] sm:blur-[100px] pointer-events-none opacity-30" aria-hidden="true" />
 
-      <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center max-w-7xl mx-auto relative z-10">
-        {/* Text Content */}
-        <div className="lg:col-span-5 space-y-6">
+      <div className="grid lg:grid-cols-12 gap-8 sm:gap-10 lg:gap-14 items-center max-w-7xl mx-auto relative z-10">
+        <div className="lg:col-span-5 space-y-4 sm:space-y-6">
           <div
             ref={revealRef1}
-            className="reveal-up inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-50 border border-red-100"
+            className="reveal-up inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-100 border border-primary-200 text-primary-700"
           >
             <span className="relative flex h-1.5 w-1.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-600"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-70" />
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary-700" />
             </span>
-            <span className="text-xs uppercase tracking-wider font-semibold text-red-700">
+            <span className="text-[11px] uppercase tracking-overline font-semibold text-primary-700">
               Kurumsal Mobilya Çözümleri
             </span>
           </div>
 
           <h1
             ref={revealRef2}
-            className="reveal-up text-4xl md:text-6xl lg:text-7xl font-serif font-light leading-tight tracking-tight text-stone-900"
+            className="reveal-up text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif font-light leading-[1.1] sm:leading-[1.08] tracking-tight text-stone-900"
             style={{ transitionDelay: '100ms' }}
           >
             Ofis ve Ticari
             <br />
-            <span className="font-normal italic text-red-600">Alanlar İçin</span>
+            <span className="font-semibold text-primary-800 tracking-tight">Alanlar İçin</span>
             <br />
             Profesyonel Mobilya
           </h1>
 
           <p
             ref={revealRef3}
-            className="reveal-up text-base md:text-lg text-stone-600 font-light max-w-lg leading-relaxed"
+            className="reveal-up text-base md:text-lg text-stone-500 font-light max-w-lg leading-relaxed"
             style={{ transitionDelay: '150ms' }}
           >
             25+ yıl tecrübe, 8 şube, 6 şehir. Kurumsal mobilya ihtiyaçlarınız için geniş ürün yelpazesi ve satış sonrası destek.
@@ -68,25 +66,25 @@ function HeroSection() {
 
           <div
             ref={revealRef4}
-            className="reveal-up flex flex-wrap gap-3 pt-2"
+            className="reveal-up flex flex-col sm:flex-row flex-wrap gap-3 pt-2"
             style={{ transitionDelay: '200ms' }}
           >
             <a
               href="#categories"
-              className="group relative inline-flex items-center justify-center px-6 py-3.5 bg-red-600 text-white rounded-lg overflow-hidden transition-all hover:shadow-lg hover:shadow-red-200 hover:bg-red-700 font-semibold"
+              className="inline-flex items-center justify-center min-h-[48px] px-6 py-3.5 bg-primary-700 text-white rounded-button font-medium shadow-soft hover:bg-primary-800 active:bg-primary-900 transition-all duration-200"
             >
               <ShoppingBag className="w-4 h-4 mr-2" />
               Ürünleri İncele
             </a>
             <a
               href="#categories"
-              className="inline-flex items-center justify-center px-6 py-3.5 bg-white border-2 border-stone-200 text-stone-900 rounded-lg hover:bg-stone-50 hover:border-red-200 transition-colors font-semibold"
+              className="inline-flex items-center justify-center min-h-[48px] px-6 py-3.5 bg-surface-elevated border border-primary-200 text-primary-800 rounded-button font-medium hover:border-primary-300 hover:bg-primary-50 active:bg-primary-100 transition-all duration-200"
             >
               Kategorilere Göz At
             </a>
             <a
               href="#contact"
-              className="inline-flex items-center justify-center px-6 py-3.5 text-stone-700 rounded-lg hover:text-red-600 transition-colors font-semibold"
+              className="inline-flex items-center justify-center min-h-[48px] px-6 py-3.5 text-primary-600 rounded-button hover:text-primary-800 font-medium transition-colors duration-200"
             >
               Şubelerimizi Ziyaret Et
               <ArrowRight className="w-4 h-4 ml-2" />
@@ -94,9 +92,8 @@ function HeroSection() {
           </div>
         </div>
 
-        {/* Product Image */}
-        <div className="lg:col-span-7 relative h-[40vh] md:h-[50vh] lg:h-[60vh] w-full">
-          <div className="absolute inset-0 rounded-2xl overflow-hidden shadow-xl bg-stone-100">
+        <div className="lg:col-span-7 relative h-[32vh] min-h-[220px] sm:h-[40vh] md:h-[50vh] lg:h-[60vh] w-full">
+          <div className="absolute inset-0 rounded-card-lg overflow-hidden shadow-card bg-stone-100">
             <img
               ref={heroImgRef}
               src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1600"

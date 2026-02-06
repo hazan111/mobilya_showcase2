@@ -1,21 +1,22 @@
 import React from 'react';
 import { ChevronRight, FileText, Scale } from 'lucide-react';
+import { ROUTES, LABELS } from '../utils/constants';
 
 function TermsOfUsePage() {
   return (
-    <div className="pt-24 pb-12 px-4 md:px-8 bg-white min-h-screen">
+    <div className="pt-24 pb-12 px-4 md:px-8 bg-surface min-h-screen">
       <div className="max-w-4xl mx-auto">
         
         {/* Header */}
         <div className="mb-10 border-b border-stone-100 pb-8">
           <nav className="flex items-center text-sm text-stone-500 mb-6 overflow-x-auto whitespace-nowrap">
-            <a href="/" className="hover:text-stone-900 transition-colors">Ana Sayfa</a>
+            <a href={ROUTES.HOME} className="hover:text-stone-900 transition-colors">{LABELS.HOME}</a>
             <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
             <span className="text-stone-900 font-medium">Kullanım Şartları</span>
           </nav>
           
           <div className="flex items-center gap-3 mb-4">
-            <Scale className="w-6 h-6 text-red-600" />
+            <Scale className="w-6 h-6 text-primary-600" />
             <h1 className="text-3xl md:text-4xl font-serif text-stone-900">
               Kullanım Şartları
             </h1>
@@ -31,12 +32,12 @@ function TermsOfUsePage() {
           {/* Section 1 */}
           <section className="mb-8">
             <h2 className="text-xl font-serif font-semibold text-stone-900 mb-4 flex items-center gap-2">
-              <FileText className="w-5 h-5 text-red-600" />
+              <FileText className="w-5 h-5 text-primary-600" />
               1. Genel Hükümler
             </h2>
             <div className="text-sm text-stone-700 leading-relaxed space-y-3">
               <p>
-                Bu Kullanım Şartları, WMB Home ("Şirket", "biz", "bizim") web sitesinin kullanımına 
+                Bu Kullanım Şartları, Sofa Design ("Şirket", "biz", "bizim") web sitesinin kullanımına 
                 ilişkin koşulları düzenler. Web sitemizi kullanarak bu şartları kabul etmiş sayılırsınız.
               </p>
               <p>
@@ -74,7 +75,7 @@ function TermsOfUsePage() {
                 sağlamanız gerekmektedir. Sipariş onayı e-posta ile gönderilir.
               </p>
               <p>
-                Fiyatlar, stok durumu ve ürün bilgileri önceden haber vermeksizin değiştirilebilir. 
+                Fiyatlar ve ürün bilgileri önceden haber vermeksizin değiştirilebilir. 
                 Sipariş onayından sonra fiyat değişiklikleri geçerli değildir.
               </p>
               <p>
@@ -174,7 +175,7 @@ function TermsOfUsePage() {
                 kullanabilirsiniz:
               </p>
               <ul className="list-disc pl-6 space-y-2">
-                <li><strong>E-posta:</strong> hukuk@wmb.com</li>
+                <li><strong>E-posta:</strong> hukuk@sofadesign.com</li>
                 <li><strong>Adres:</strong> Mobilya Caddesi No:142, Tasarım Mahallesi, İstanbul</li>
               </ul>
             </div>

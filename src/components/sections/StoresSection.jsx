@@ -1,6 +1,7 @@
 import React from 'react';
 import { MapPin, Phone, Clock, ArrowRight, Navigation } from 'lucide-react';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
+import { ROUTES } from '../../utils/constants';
 
 function StoresSection() {
   const revealRef1 = useIntersectionObserver();
@@ -47,16 +48,16 @@ function StoresSection() {
   const cardRefs = [revealRef2, revealRef3, revealRef4, revealRef5];
 
   return (
-    <section className="py-12 md:py-16 px-4 bg-white border-t border-stone-100">
+    <section className="py-12 sm:py-14 md:py-20 px-4 sm:px-6 md:px-8 bg-surface border-t border-primary-200">
       <div className="max-w-7xl mx-auto">
-        <div ref={revealRef1} className="text-center mb-10 reveal-up">
-          <span className="inline-block bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3">
+        <div ref={revealRef1} className="text-center mb-8 sm:mb-12 reveal-up">
+          <span className="inline-block bg-primary-50 text-primary-700 px-3.5 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-overline mb-3">
             Lokasyonlarımız
           </span>
-          <h2 className="text-3xl md:text-4xl font-serif mb-3 text-stone-900">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-semibold tracking-tight mb-3 text-stone-900">
             Şubelerimiz
           </h2>
-          <p className="text-stone-600 max-w-2xl mx-auto text-base">
+          <p className="text-stone-500 max-w-2xl mx-auto text-base leading-relaxed">
             Türkiye genelindeki 8 şubemizde ürünlerimizi yakından inceleyebilir, iç mimarlarımızdan ücretsiz proje danışmanlığı alabilirsiniz.
           </p>
         </div>
@@ -66,13 +67,13 @@ function StoresSection() {
             <div
               key={branch.id}
               ref={cardRefs[index]}
-              className="group bg-stone-50 rounded-xl border border-stone-200 hover:border-red-300 hover:shadow-lg transition-all duration-300 p-6 reveal-up"
+              className="group bg-surface-elevated rounded-card border border-primary-200 shadow-soft hover:border-primary-300 hover:shadow-card transition-all duration-200 p-6 reveal-up"
               style={{ transitionDelay: `${index * 100}ms` }}
             >
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <div className="text-xs font-bold text-red-600 mb-1">{branch.city}</div>
-                  <h3 className="font-serif text-lg font-semibold text-stone-900 group-hover:text-red-600 transition-colors">
+                  <div className="text-[11px] font-semibold text-primary-600 uppercase tracking-overline mb-1">{branch.city}</div>
+                  <h3 className="font-serif text-lg font-semibold text-stone-900 group-hover:text-primary-600 transition-colors">
                     {branch.name}
                   </h3>
                 </div>
@@ -96,15 +97,15 @@ function StoresSection() {
 
               <div className="flex gap-2 pt-4 border-t border-stone-200">
                 <a
-                  href="/stores"
-                  className="flex-1 bg-stone-900 text-white py-2 rounded-lg text-xs font-semibold hover:bg-red-600 transition-colors flex items-center justify-center gap-1.5"
+                  href={ROUTES.STORES}
+                  className="flex-1 bg-stone-900 text-white py-2.5 rounded-button text-xs font-semibold hover:bg-primary-600 transition-colors flex items-center justify-center gap-1.5"
                 >
                   <Navigation className="w-3.5 h-3.5" />
                   Detay
                 </a>
                 <a
-                  href="/stores"
-                  className="flex-1 border border-stone-200 text-stone-700 py-2 rounded-lg text-xs font-semibold hover:border-red-300 hover:bg-red-50 transition-colors flex items-center justify-center gap-1.5"
+                  href={ROUTES.STORES}
+                  className="flex-1 border border-stone-200 text-stone-700 py-2.5 rounded-button text-xs font-semibold hover:border-primary-200 hover:bg-primary-50 transition-colors flex items-center justify-center gap-1.5"
                 >
                   Randevu
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -116,8 +117,8 @@ function StoresSection() {
 
         <div className="text-center mt-10">
           <a
-            href="/stores"
-            className="inline-flex items-center gap-2 text-red-600 font-semibold hover:text-red-700 hover:gap-3 transition-all"
+            href={ROUTES.STORES}
+            className="inline-flex items-center gap-2 text-primary-600 font-semibold hover:text-primary-700 hover:gap-3 transition-all"
           >
             Tüm Şubeleri Gör
             <ArrowRight className="w-4 h-4" />

@@ -1,21 +1,21 @@
 import React from 'react';
 import { ChevronRight, Truck, Wrench, MapPin, Clock, Package, CheckCircle2 } from 'lucide-react';
-import { CONTACT_INFO } from '../utils/constants';
+import { CONTACT_INFO, ROUTES, LABELS } from '../utils/constants';
 import useIntersectionObserver from '../hooks/useIntersectionObserver';
 
 function DeliveryPage() {
   // Delivery timelines
   const deliveryTimelines = [
     {
-      type: 'Stoklu Ürünler',
+      type: 'Hazır Ürünler',
       timeline: '3-5 İş Günü',
-      description: 'Stokta bulunan ürünler için hızlı teslimat',
+      description: 'Hazır ürünler için hızlı teslimat',
       location: 'İstanbul içi',
     },
     {
-      type: 'Stoklu Ürünler',
+      type: 'Hazır Ürünler',
       timeline: '5-7 İş Günü',
-      description: 'Stokta bulunan ürünler için teslimat',
+      description: 'Hazır ürünler için teslimat',
       location: 'Şehir dışı',
     },
     {
@@ -81,13 +81,13 @@ function DeliveryPage() {
   ];
 
   return (
-    <div className="pt-24 pb-12 px-4 md:px-8 bg-white min-h-screen">
+    <div className="pt-24 pb-12 px-4 md:px-8 bg-surface min-h-screen">
       <div className="max-w-6xl mx-auto">
         
         {/* Header */}
         <div className="mb-10 border-b border-stone-100 pb-8">
           <nav className="flex items-center text-sm text-stone-500 mb-6 overflow-x-auto whitespace-nowrap">
-            <a href="/" className="hover:text-stone-900 transition-colors">Ana Sayfa</a>
+            <a href={ROUTES.HOME} className="hover:text-stone-900 transition-colors">{LABELS.HOME}</a>
             <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
             <span className="text-stone-900 font-medium">Teslimat Bilgileri</span>
           </nav>
@@ -105,7 +105,7 @@ function DeliveryPage() {
         {/* 1. Delivery Timelines */}
         <div className="mb-10">
           <h2 className="text-xl font-serif font-semibold text-stone-900 mb-6 flex items-center gap-2">
-            <Clock className="w-5 h-5 text-red-600" />
+            <Clock className="w-5 h-5 text-primary-600" />
             Teslimat Süreleri
           </h2>
           <div className="grid md:grid-cols-2 gap-4">
@@ -129,7 +129,7 @@ function DeliveryPage() {
                         <span>{item.location}</span>
                       </div>
                     </div>
-                    <div className="bg-red-50 text-red-600 px-3 py-1 rounded-lg text-xs font-bold">
+                    <div className="bg-primary-50 text-primary-600 px-3 py-1 rounded-lg text-xs font-bold">
                       {item.timeline}
                     </div>
                   </div>
@@ -145,7 +145,7 @@ function DeliveryPage() {
         {/* 2. Installation Options */}
         <div className="mb-10">
           <h2 className="text-xl font-serif font-semibold text-stone-900 mb-6 flex items-center gap-2">
-            <Wrench className="w-5 h-5 text-red-600" />
+            <Wrench className="w-5 h-5 text-primary-600" />
             Kurulum Seçenekleri
           </h2>
           <div className="grid md:grid-cols-2 gap-5">
@@ -168,7 +168,7 @@ function DeliveryPage() {
                   <ul className="space-y-2">
                     {option.included.map((item, idx) => (
                       <li key={idx} className="flex items-start gap-2 text-xs text-stone-700">
-                        <CheckCircle2 className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-4 h-4 text-primary-600 flex-shrink-0 mt-0.5" />
                         <span>{item}</span>
                       </li>
                     ))}
@@ -182,7 +182,7 @@ function DeliveryPage() {
         {/* 3. Regional Delivery Notes */}
         <div className="mb-8">
           <h2 className="text-xl font-serif font-semibold text-stone-900 mb-6 flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-red-600" />
+            <MapPin className="w-5 h-5 text-primary-600" />
             Bölgesel Teslimat Notları
           </h2>
           <div className="space-y-3">
@@ -220,7 +220,7 @@ function DeliveryPage() {
         {/* Additional Info */}
         <div className="bg-stone-50 rounded-lg border border-stone-200 p-6">
           <h3 className="font-semibold text-stone-900 mb-4 text-sm flex items-center gap-2">
-            <Package className="w-4 h-4 text-red-600" />
+            <Package className="w-4 h-4 text-primary-600" />
             Ek Bilgiler
           </h3>
           <ul className="space-y-2 text-xs text-stone-600">

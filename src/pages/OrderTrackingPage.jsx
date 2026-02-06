@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronRight, Search, Package, CheckCircle2, Clock, Truck, Phone, Mail } from 'lucide-react';
-import { CONTACT_INFO } from '../utils/constants';
+import { CONTACT_INFO, ROUTES, LABELS } from '../utils/constants';
 
 function OrderTrackingPage() {
   const [orderNumber, setOrderNumber] = useState('');
@@ -51,13 +51,13 @@ function OrderTrackingPage() {
   const currentStatusInfo = statusDefinitions.find(s => s.status === orderStatus);
 
   return (
-    <div className="pt-24 pb-12 px-4 md:px-8 bg-white min-h-screen">
+    <div className="pt-24 pb-12 px-4 md:px-8 bg-surface min-h-screen">
       <div className="max-w-3xl mx-auto">
         
         {/* Header */}
         <div className="mb-10 border-b border-stone-100 pb-8">
           <nav className="flex items-center text-sm text-stone-500 mb-6 overflow-x-auto whitespace-nowrap">
-            <a href="/" className="hover:text-stone-900 transition-colors">Ana Sayfa</a>
+            <a href={ROUTES.HOME} className="hover:text-stone-900 transition-colors">{LABELS.HOME}</a>
             <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
             <span className="text-stone-900 font-medium">Sipariş Takibi</span>
           </nav>
@@ -84,13 +84,13 @@ function OrderTrackingPage() {
                 id="orderNumber"
                 value={orderNumber}
                 onChange={(e) => setOrderNumber(e.target.value)}
-                placeholder="Örn: WMB-2024-001234"
-                className="flex-1 px-4 py-3 border border-stone-300 rounded-lg focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none"
+                placeholder="Örn: SD-2024-001234"
+                className="flex-1 px-4 py-3 border border-stone-300 rounded-lg focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
                 required
               />
               <button
                 type="submit"
-                className="px-6 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors flex items-center gap-2"
+                className="px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors flex items-center gap-2"
               >
                 <Search className="w-5 h-5" />
                 Sorgula
@@ -174,24 +174,24 @@ function OrderTrackingPage() {
           </p>
           <div className="grid md:grid-cols-2 gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
                 <Phone className="w-5 h-5 text-white" />
               </div>
               <div>
                 <div className="text-xs text-stone-500 mb-1">Telefon</div>
-                <a href={`tel:${CONTACT_INFO.phone}`} className="text-sm font-semibold text-stone-900 hover:text-red-600 transition-colors">
+                <a href={`tel:${CONTACT_INFO.phone}`} className="text-sm font-semibold text-stone-900 hover:text-primary-600 transition-colors">
                   {CONTACT_INFO.phone}
                 </a>
               </div>
             </div>
             
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
                 <Mail className="w-5 h-5 text-white" />
               </div>
               <div>
                 <div className="text-xs text-stone-500 mb-1">E-posta</div>
-                <a href={`mailto:${CONTACT_INFO.email}`} className="text-sm font-semibold text-stone-900 hover:text-red-600 transition-colors break-all">
+                <a href={`mailto:${CONTACT_INFO.email}`} className="text-sm font-semibold text-stone-900 hover:text-primary-600 transition-colors break-all">
                   {CONTACT_INFO.email}
                 </a>
               </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowRight, ChevronRight, Building2, Users, Briefcase } from 'lucide-react';
 import useIntersectionObserver from '../hooks/useIntersectionObserver';
+import { ROUTES, LABELS } from '../utils/constants';
 
 function ProjectsPage() {
   // Sample projects data
@@ -68,13 +69,13 @@ function ProjectsPage() {
   ];
 
   return (
-    <div className="pt-24 pb-12 px-4 md:px-8 bg-white min-h-screen">
+    <div className="pt-24 pb-12 px-4 md:px-8 bg-surface min-h-screen">
       <div className="max-w-7xl mx-auto">
         
         {/* Header */}
         <div className="mb-10 border-b border-stone-100 pb-8">
           <nav className="flex items-center text-sm text-stone-500 mb-6 overflow-x-auto whitespace-nowrap">
-            <a href="/" className="hover:text-stone-900 transition-colors">Ana Sayfa</a>
+            <a href={ROUTES.HOME} className="hover:text-stone-900 transition-colors">{LABELS.HOME}</a>
             <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
             <span className="text-stone-900 font-medium">Projelerimiz</span>
           </nav>
@@ -100,7 +101,7 @@ function ProjectsPage() {
               <div
                 key={project.id}
                 ref={projectRef}
-                className="group bg-white rounded-xl overflow-hidden border border-stone-200 hover:border-red-300 hover:shadow-lg transition-all duration-300 flex flex-col reveal-up"
+                className="group bg-white rounded-xl overflow-hidden border border-stone-200 hover:border-primary-200 hover:shadow-lg transition-all duration-300 flex flex-col reveal-up"
                 style={{ transitionDelay: `${index * 50}ms` }}
               >
                 {/* Project Image */}
@@ -120,7 +121,7 @@ function ProjectsPage() {
                 {/* Project Info */}
                 <div className="p-5 flex flex-col flex-1">
                   <div className="flex items-start justify-between gap-2 mb-2">
-                    <h3 className="font-serif text-lg font-semibold text-stone-900 group-hover:text-red-600 transition-colors flex-1">
+                    <h3 className="font-serif text-lg font-semibold text-stone-900 group-hover:text-primary-600 transition-colors flex-1">
                       {project.title}
                     </h3>
                   </div>
@@ -155,7 +156,7 @@ function ProjectsPage() {
                   {/* CTA */}
                   <a
                     href={project.category}
-                    className="inline-flex items-center gap-2 text-sm font-semibold text-red-600 hover:text-red-700 transition-colors mt-auto"
+                    className="inline-flex items-center gap-2 text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors mt-auto"
                   >
                     İlgili Ürünleri Gör
                     <ArrowRight className="w-4 h-4" />
@@ -175,8 +176,8 @@ function ProjectsPage() {
             Kurumsal projeleriniz için özel çözümler. İç mimari danışmanlık ve proje yönetimi hizmeti.
           </p>
           <a
-            href="/contact"
-            className="inline-flex items-center gap-2 bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors"
+            href={ROUTES.CONTACT}
+            className="inline-flex items-center gap-2 bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors"
           >
             Proje Teklifi İste
             <ArrowRight className="w-5 h-5" />

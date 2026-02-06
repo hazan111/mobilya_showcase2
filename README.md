@@ -1,6 +1,6 @@
-# WMB Mobilya Showcase - React + Vite Projesi
+# Sofa Design - React + Vite Projesi
 
-WMB mobilya showcase sitesi, React ve Vite ile oluşturulmuş modern bir web uygulaması.
+Sofa Design showcase sitesi, React ve Vite ile oluşturulmuş modern bir web uygulaması.
 
 ## Proje Yapısı
 

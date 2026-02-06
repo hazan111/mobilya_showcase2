@@ -6,7 +6,7 @@ export function CartProvider({ children }) {
   // Initialize cart from localStorage or empty array
   const [cart, setCart] = useState(() => {
     try {
-      const savedCart = localStorage.getItem('wmb_cart');
+      const savedCart = localStorage.getItem('sofadesign_cart');
       if (savedCart) {
         return JSON.parse(savedCart);
       }
@@ -18,7 +18,7 @@ export function CartProvider({ children }) {
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('wmb_cart', JSON.stringify(cart));
+    localStorage.setItem('sofadesign_cart', JSON.stringify(cart));
   }, [cart]);
 
   const addToCart = (product) => {

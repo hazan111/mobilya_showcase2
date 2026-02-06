@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowRight, ChevronRight, CheckCircle, FileText, Users, Wrench, Package, Building2, Briefcase, Award, Phone } from 'lucide-react';
-import { CATEGORIES, COMPANY_STATS } from '../utils/constants';
+import { CATEGORIES, COMPANY_STATS, ROUTES, LABELS } from '../utils/constants';
 import useIntersectionObserver from '../hooks/useIntersectionObserver';
 
 function CustomProjectPage() {
@@ -78,15 +78,13 @@ function CustomProjectPage() {
   ];
 
   return (
-    <div className="pt-24 pb-12 px-4 md:px-8 bg-white min-h-screen">
+    <div className="pt-24 pb-12 px-4 md:px-8 bg-surface min-h-screen">
       <div className="max-w-7xl mx-auto">
         
         {/* 1. Page Header */}
         <div className="mb-12 border-b border-stone-100 pb-8">
           <nav className="flex items-center text-sm text-stone-500 mb-6 overflow-x-auto whitespace-nowrap">
-            <a href="/" className="hover:text-stone-900 transition-colors">Ana Sayfa</a>
-            <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
-            <a href="/products" className="hover:text-stone-900 transition-colors">Kategoriler</a>
+            <a href={ROUTES.HOME} className="hover:text-stone-900 transition-colors">{LABELS.HOME}</a>
             <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
             <span className="text-stone-900 font-medium">{projectCategory.title}</span>
           </nav>
@@ -110,7 +108,7 @@ function CustomProjectPage() {
                     className="bg-stone-50 rounded-lg p-4 text-center border border-stone-200 reveal-up"
                     style={{ transitionDelay: `${index * 50}ms` }}
                   >
-                    <div className="text-2xl font-bold text-red-600 mb-1">{indicator.value}</div>
+                    <div className="text-2xl font-bold text-primary-600 mb-1">{indicator.value}</div>
                     <div className="text-xs text-stone-600">{indicator.label}</div>
                   </div>
                 );
@@ -133,13 +131,13 @@ function CustomProjectPage() {
                 <div
                   key={index}
                   ref={stepRef}
-                  className="relative bg-white rounded-xl border border-stone-200 p-6 hover:border-red-300 hover:shadow-lg transition-all reveal-up"
+                  className="relative bg-white rounded-xl border border-stone-200 p-6 hover:border-primary-200 hover:shadow-lg transition-all reveal-up"
                   style={{ transitionDelay: `${index * 100}ms` }}
                 >
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0">
-                      <div className="w-12 h-12 bg-red-50 rounded-lg flex items-center justify-center mb-4">
-                        <StepIcon className="w-6 h-6 text-red-600" />
+                      <div className="w-12 h-12 bg-primary-50 rounded-lg flex items-center justify-center mb-4">
+                        <StepIcon className="w-6 h-6 text-primary-600" />
                       </div>
                       <div className="text-xs font-bold text-stone-400 mb-2">{step.step}</div>
                     </div>
@@ -177,11 +175,11 @@ function CustomProjectPage() {
                 <div
                   key={index}
                   ref={projectRef}
-                  className="bg-white rounded-xl border border-stone-200 p-6 hover:border-red-300 hover:shadow-lg transition-all reveal-up"
+                  className="bg-white rounded-xl border border-stone-200 p-6 hover:border-primary-200 hover:shadow-lg transition-all reveal-up"
                   style={{ transitionDelay: `${index * 100}ms` }}
                 >
-                  <div className="w-12 h-12 bg-red-50 rounded-lg flex items-center justify-center mb-4">
-                    <ProjectIcon className="w-6 h-6 text-red-600" />
+                  <div className="w-12 h-12 bg-primary-50 rounded-lg flex items-center justify-center mb-4">
+                    <ProjectIcon className="w-6 h-6 text-primary-600" />
                   </div>
                   <h3 className="font-serif text-lg font-semibold text-stone-900 mb-2">
                     {project.title}
@@ -192,7 +190,7 @@ function CustomProjectPage() {
                   <ul className="space-y-2">
                     {project.examples.map((example, idx) => (
                       <li key={idx} className="flex items-center gap-2 text-xs text-stone-600">
-                        <CheckCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
+                        <CheckCircle className="w-4 h-4 text-primary-600 flex-shrink-0" />
                         <span>{example}</span>
                       </li>
                     ))}
@@ -204,7 +202,7 @@ function CustomProjectPage() {
         </div>
 
         {/* 4. CTA: Request Project Quote */}
-        <div className="bg-gradient-to-r from-stone-900 to-stone-800 rounded-2xl p-8 md:p-12 border border-stone-700 text-white">
+        <div className="bg-ink rounded-card-lg p-8 md:p-12 border border-ink-border text-white">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-2xl md:text-3xl font-serif mb-4">
               Proje Teklifi Alın
@@ -214,14 +212,14 @@ function CustomProjectPage() {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
-                href="/contact"
-                className="inline-flex items-center gap-2 bg-red-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-red-700 transition-colors shadow-lg text-base"
+                href={ROUTES.CONTACT}
+                className="inline-flex items-center gap-2 bg-primary-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-primary-700 transition-colors shadow-lg text-base"
               >
                 <Phone className="w-5 h-5" />
                 Proje Teklifi İste
               </a>
               <a
-                href="/stores"
+                href={ROUTES.STORES}
                 className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white border border-white/20 px-8 py-4 rounded-lg font-semibold hover:bg-white/20 transition-colors text-base"
               >
                 Şubelerimizi Ziyaret Et

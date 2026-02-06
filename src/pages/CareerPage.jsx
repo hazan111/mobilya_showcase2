@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronRight, Users, Briefcase, MapPin, Clock, Send, Building2, CheckCircle2 } from 'lucide-react';
-import { COMPANY_STATS } from '../utils/constants';
+import { COMPANY_STATS, ROUTES, LABELS } from '../utils/constants';
 import { useToast } from '../context/ToastContext';
 import useIntersectionObserver from '../hooks/useIntersectionObserver';
 
@@ -89,13 +89,13 @@ function CareerPage() {
   ];
 
   return (
-    <div className="pt-24 pb-12 px-4 md:px-8 bg-white min-h-screen">
+    <div className="pt-24 pb-12 px-4 md:px-8 bg-surface min-h-screen">
       <div className="max-w-6xl mx-auto">
         
         {/* Header */}
         <div className="mb-10 border-b border-stone-100 pb-8">
           <nav className="flex items-center text-sm text-stone-500 mb-6 overflow-x-auto whitespace-nowrap">
-            <a href="/" className="hover:text-stone-900 transition-colors">Ana Sayfa</a>
+            <a href={ROUTES.HOME} className="hover:text-stone-900 transition-colors">{LABELS.HOME}</a>
             <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
             <span className="text-stone-900 font-medium">Kariyer</span>
           </nav>
@@ -128,8 +128,8 @@ function CareerPage() {
                   className="bg-stone-50 rounded-lg border border-stone-200 p-5 reveal-up"
                   style={{ transitionDelay: `${index * 50}ms` }}
                 >
-                  <div className="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center mb-3">
-                    <HighlightIcon className="w-5 h-5 text-red-600" />
+                  <div className="w-10 h-10 bg-primary-50 rounded-lg flex items-center justify-center mb-3">
+                    <HighlightIcon className="w-5 h-5 text-primary-600" />
                   </div>
                   <h3 className="font-semibold text-stone-900 mb-2 text-sm">
                     {highlight.title}
@@ -156,7 +156,7 @@ function CareerPage() {
                 <div
                   key={position.id}
                   ref={positionRef}
-                  className="bg-white border border-stone-200 rounded-lg p-5 hover:border-red-300 hover:shadow-md transition-all reveal-up"
+                  className="bg-white border border-stone-200 rounded-lg p-5 hover:border-primary-200 hover:shadow-md transition-all reveal-up"
                   style={{ transitionDelay: `${index * 30}ms` }}
                 >
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -184,7 +184,7 @@ function CareerPage() {
                         setFormData({ ...formData, position: position.title });
                         document.getElementById('application-form')?.scrollIntoView({ behavior: 'smooth' });
                       }}
-                      className="px-4 py-2 bg-red-600 text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition-colors whitespace-nowrap"
+                      className="px-4 py-2 bg-primary-600 text-white text-sm font-semibold rounded-lg hover:bg-primary-700 transition-colors whitespace-nowrap"
                     >
                       Başvur
                     </button>
@@ -217,7 +217,7 @@ function CareerPage() {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none"
+                  className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
                 />
               </div>
               <div>
@@ -231,7 +231,7 @@ function CareerPage() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none"
+                  className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
                 />
               </div>
               <div>
@@ -245,7 +245,7 @@ function CareerPage() {
                   value={formData.phone}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none"
+                  className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
                 />
               </div>
               <div>
@@ -260,7 +260,7 @@ function CareerPage() {
                   onChange={handleChange}
                   required
                   placeholder="Örn: Satış Temsilcisi"
-                  className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none"
+                  className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
                 />
               </div>
             </div>
@@ -275,7 +275,7 @@ function CareerPage() {
                 value={formData.experience}
                 onChange={handleChange}
                 min="0"
-                className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none"
+                className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
               />
             </div>
             <div>
@@ -288,13 +288,13 @@ function CareerPage() {
                 value={formData.message}
                 onChange={handleChange}
                 rows="4"
-                className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none"
+                className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
                 placeholder="Kısa özgeçmiş veya eklemek istediğiniz notlar..."
               />
             </div>
             <button
               type="submit"
-              className="w-full md:w-auto inline-flex items-center gap-2 bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors"
+              className="w-full md:w-auto inline-flex items-center gap-2 bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors"
             >
               <Send className="w-5 h-5" />
               Başvuruyu Gönder

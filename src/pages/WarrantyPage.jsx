@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChevronRight, Shield, Wrench, Clock, CheckCircle2, XCircle, Phone, Mail, AlertCircle } from 'lucide-react';
-import { CONTACT_INFO } from '../utils/constants';
+import { CONTACT_INFO, ROUTES, LABELS } from '../utils/constants';
 import useIntersectionObserver from '../hooks/useIntersectionObserver';
 
 function WarrantyPage() {
@@ -63,13 +63,13 @@ function WarrantyPage() {
   ];
 
   return (
-    <div className="pt-24 pb-12 px-4 md:px-8 bg-white min-h-screen">
+    <div className="pt-24 pb-12 px-4 md:px-8 bg-surface min-h-screen">
       <div className="max-w-6xl mx-auto">
         
         {/* Header */}
         <div className="mb-10 border-b border-stone-100 pb-8">
           <nav className="flex items-center text-sm text-stone-500 mb-6 overflow-x-auto whitespace-nowrap">
-            <a href="/" className="hover:text-stone-900 transition-colors">Ana Sayfa</a>
+            <a href={ROUTES.HOME} className="hover:text-stone-900 transition-colors">{LABELS.HOME}</a>
             <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
             <span className="text-stone-900 font-medium">Garanti & Bakım</span>
           </nav>
@@ -87,7 +87,7 @@ function WarrantyPage() {
         {/* 1. Warranty Coverage */}
         <div className="mb-10">
           <h2 className="text-xl font-serif font-semibold text-stone-900 mb-6 flex items-center gap-2">
-            <Shield className="w-5 h-5 text-red-600" />
+            <Shield className="w-5 h-5 text-primary-600" />
             Garanti Kapsamı
           </h2>
           <div className="grid md:grid-cols-3 gap-5">
@@ -102,12 +102,12 @@ function WarrantyPage() {
                   className={`rounded-lg border p-5 reveal-up ${
                     isExcluded 
                       ? 'bg-stone-50 border-stone-200' 
-                      : 'bg-red-50 border-red-200'
+                      : 'bg-primary-50 border-primary-200'
                   }`}
                   style={{ transitionDelay: `${index * 50}ms` }}
                 >
                   <h3 className={`font-semibold mb-4 text-sm ${
-                    isExcluded ? 'text-stone-900' : 'text-red-900'
+                    isExcluded ? 'text-stone-900' : 'text-primary-900'
                   }`}>
                     {item.title}
                   </h3>
@@ -117,7 +117,7 @@ function WarrantyPage() {
                         {isExcluded ? (
                           <XCircle className="w-4 h-4 text-stone-400 flex-shrink-0 mt-0.5" />
                         ) : (
-                          <CheckCircle2 className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+                          <CheckCircle2 className="w-4 h-4 text-primary-600 flex-shrink-0 mt-0.5" />
                         )}
                         <span className={isExcluded ? 'text-stone-600' : 'text-stone-700'}>
                           {detail}
@@ -134,7 +134,7 @@ function WarrantyPage() {
         {/* 2. Maintenance Services */}
         <div className="mb-10">
           <h2 className="text-xl font-serif font-semibold text-stone-900 mb-6 flex items-center gap-2">
-            <Wrench className="w-5 h-5 text-red-600" />
+            <Wrench className="w-5 h-5 text-primary-600" />
             Bakım Hizmetleri
           </h2>
           <div className="grid md:grid-cols-2 gap-5">
@@ -183,12 +183,12 @@ function WarrantyPage() {
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
                   <Phone className="w-5 h-5 text-white" />
                 </div>
                 <div>
                   <div className="text-xs text-stone-500 uppercase tracking-wide mb-1">Telefon</div>
-                  <a href={`tel:${CONTACT_INFO.phone}`} className="text-lg font-semibold text-stone-900 hover:text-red-600 transition-colors">
+                  <a href={`tel:${CONTACT_INFO.phone}`} className="text-lg font-semibold text-stone-900 hover:text-primary-600 transition-colors">
                     {CONTACT_INFO.phone}
                   </a>
                 </div>
@@ -201,12 +201,12 @@ function WarrantyPage() {
             
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
                   <Mail className="w-5 h-5 text-white" />
                 </div>
                 <div>
                   <div className="text-xs text-stone-500 uppercase tracking-wide mb-1">E-posta</div>
-                  <a href={`mailto:${CONTACT_INFO.email}`} className="text-lg font-semibold text-stone-900 hover:text-red-600 transition-colors break-all">
+                  <a href={`mailto:${CONTACT_INFO.email}`} className="text-lg font-semibold text-stone-900 hover:text-primary-600 transition-colors break-all">
                     {CONTACT_INFO.email}
                   </a>
                 </div>

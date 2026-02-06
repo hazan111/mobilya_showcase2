@@ -20,16 +20,16 @@ function AboutSection() {
   const refs = [revealRef2, revealRef3, revealRef4, revealRef5];
 
   return (
-    <section className="py-12 md:py-16 px-4 bg-white border-t border-stone-100">
+    <section className="py-12 sm:py-14 md:py-20 px-4 sm:px-6 md:px-8 bg-surface border-t border-primary-200">
       <div className="max-w-6xl mx-auto">
         <div
           ref={revealRef1}
-          className="text-center mb-10 reveal-up"
+          className="text-center mb-8 sm:mb-12 reveal-up"
         >
-          <h2 className="text-3xl md:text-4xl font-serif mb-3 text-stone-900">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-semibold tracking-tight mb-3 text-stone-900">
             Kurumsal Güven
           </h2>
-          <p className="text-stone-600 max-w-2xl mx-auto text-base">
+          <p className="text-stone-500 max-w-2xl mx-auto text-base leading-relaxed">
             Sektördeki tecrübemiz ve operasyonel gücümüzle kurumsal mobilya çözümlerinde güvenilir ortağınızız.
           </p>
         </div>
@@ -41,13 +41,13 @@ function AboutSection() {
               <div
                 key={index}
                 ref={refs[index]}
-                className="text-center p-6 bg-stone-50 rounded-xl border border-stone-200 hover:border-red-200 transition-colors reveal-up"
+                className="text-center p-4 sm:p-6 bg-surface-elevated rounded-card border border-primary-200 shadow-soft hover:shadow-card hover:border-primary-300 transition-all duration-200 reveal-up"
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
-                <div className="w-12 h-12 bg-white border border-stone-100 rounded-full flex items-center justify-center text-red-600 mx-auto mb-3 shadow-sm">
+                <div className="w-12 h-12 bg-surface-elevated border border-primary-200 rounded-full flex items-center justify-center text-primary-700 mx-auto mb-3 shadow-soft">
                   <StatIcon className="w-6 h-6" />
                 </div>
-                <div className="text-3xl font-bold text-stone-900 mb-1">{stat.value}</div>
+                <div className="text-xl sm:text-2xl md:text-3xl font-semibold text-stone-900 mb-1 tracking-tight">{stat.value}</div>
                 <p className="text-sm font-medium text-stone-500">{stat.label}</p>
               </div>
             );

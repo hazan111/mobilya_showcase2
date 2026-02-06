@@ -5,6 +5,7 @@ import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
 import { getProductImageUrl } from '../utils/imageHelpers';
 import { formatPrice } from '../utils/priceHelpers';
+import { ROUTES, LABELS } from '../utils/constants';
 import useIntersectionObserver from '../hooks/useIntersectionObserver';
 
 function MeetingCategoryPage() {
@@ -54,15 +55,13 @@ function MeetingCategoryPage() {
   ];
 
   return (
-    <div className="pt-24 pb-12 px-4 md:px-8 bg-white min-h-screen">
+    <div className="pt-24 pb-12 px-4 md:px-8 bg-surface min-h-screen">
       <div className="max-w-7xl mx-auto">
         
         {/* 1. Functional Header */}
         <div className="mb-10 border-b border-stone-100 pb-6">
           <nav className="flex items-center text-sm text-stone-500 mb-4 overflow-x-auto whitespace-nowrap">
-            <a href="/" className="hover:text-stone-900 transition-colors">Ana Sayfa</a>
-            <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
-            <a href="/products" className="hover:text-stone-900 transition-colors">Kategoriler</a>
+            <a href={ROUTES.HOME} className="hover:text-stone-900 transition-colors">{LABELS.HOME}</a>
             <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
             <span className="text-stone-900 font-medium">{meetingCategory?.name || 'Toplantı & Ortak Alan'}</span>
           </nav>
@@ -94,17 +93,17 @@ function MeetingCategoryPage() {
                 <div
                   key={index}
                   ref={scenarioRef}
-                  className="bg-stone-50 rounded-lg border border-stone-200 p-4 hover:border-red-300 hover:bg-white transition-all reveal-up"
+                  className="bg-stone-50 rounded-lg border border-stone-200 p-4 hover:border-primary-200 hover:bg-white transition-all reveal-up"
                   style={{ transitionDelay: `${index * 30}ms` }}
                 >
                   <div className="flex items-start gap-3">
-                    <div className="flex-shrink-0 w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center">
-                      <ScenarioIcon className="w-5 h-5 text-red-600" />
+                    <div className="flex-shrink-0 w-10 h-10 bg-primary-50 rounded-lg flex items-center justify-center">
+                      <ScenarioIcon className="w-5 h-5 text-primary-600" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold text-sm text-stone-900 mb-1">{scenario.title}</h3>
                       <p className="text-xs text-stone-500 mb-2 line-clamp-2">{scenario.description}</p>
-                      <span className="text-xs font-medium text-red-600">{scenario.products} Ürün</span>
+                      <span className="text-xs font-medium text-primary-600">{scenario.products} Ürün</span>
                     </div>
                   </div>
                 </div>
@@ -133,7 +132,7 @@ function MeetingCategoryPage() {
                 <div
                   key={product._id}
                   ref={productRef}
-                  className="group bg-white rounded-lg overflow-hidden border border-stone-200 hover:border-red-300 hover:shadow-md transition-all duration-300 flex flex-col reveal-up"
+                  className="group bg-white rounded-lg overflow-hidden border border-stone-200 hover:border-primary-200 hover:shadow-md transition-all duration-300 flex flex-col reveal-up"
                   style={{ transitionDelay: `${index * 40}ms` }}
                 >
                   <a href={`/product/${product._id}`} className="relative aspect-[4/3] overflow-hidden bg-stone-100 block">
@@ -142,17 +141,10 @@ function MeetingCategoryPage() {
                       alt={product.name}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    {product.stock && product.stock > 0 && (
-                      <div className="absolute top-2 left-2">
-                        <div className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">
-                          STOKTA
-                        </div>
-                      </div>
-                    )}
                   </a>
                   <div className="p-4 flex flex-col flex-1">
                     <a href={`/product/${product._id}`}>
-                      <h3 className="font-serif text-base font-medium text-stone-900 mb-1 group-hover:text-red-600 transition-colors line-clamp-1">
+                      <h3 className="font-serif text-base font-medium text-stone-900 mb-1 group-hover:text-primary-600 transition-colors line-clamp-1">
                         {product.name}
                       </h3>
                     </a>
@@ -163,7 +155,7 @@ function MeetingCategoryPage() {
                     <div className="mt-auto pt-3 border-t border-stone-100">
                       <div className="flex items-center justify-between gap-3 mb-3">
                         <div>
-                          <div className="font-bold text-red-600">
+                          <div className="font-bold text-primary-600">
                             {formatPrice(product.price, product.currency)}
                           </div>
                         </div>
@@ -171,7 +163,7 @@ function MeetingCategoryPage() {
                       <div className="flex items-center gap-2">
                         <a 
                           href={`/product/${product._id}`}
-                          className="flex-1 text-center text-xs font-semibold text-white bg-red-600 px-3 py-2 rounded hover:bg-red-700 transition-colors"
+                          className="flex-1 text-center text-xs font-semibold text-white bg-primary-600 px-3 py-2 rounded hover:bg-primary-700 transition-colors"
                         >
                           Detay
                         </a>
@@ -204,7 +196,7 @@ function MeetingCategoryPage() {
           ) : (
             <div className="text-center py-16 text-stone-600">
               <p className="mb-4">Bu kategoride ürün bulunamadı.</p>
-              <a href="/products" className="text-red-600 hover:text-red-700">Tüm Ürünleri Gör →</a>
+              <a href={ROUTES.PRODUCTS} className="text-primary-600 hover:text-primary-700">Tüm Ürünleri Gör →</a>
             </div>
           )}
         </div>
@@ -220,7 +212,7 @@ function MeetingCategoryPage() {
             </p>
             <a
               href="/category/3"
-              className="inline-flex items-center gap-2 bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors shadow-md"
+              className="inline-flex items-center gap-2 bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors shadow-md"
             >
               Tüm Ürünleri Görüntüle
               <ArrowRight className="w-5 h-5" />

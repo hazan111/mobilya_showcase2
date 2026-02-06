@@ -6,6 +6,7 @@ import { useToast } from '../context/ToastContext';
 import { getProductImageUrl } from '../utils/imageHelpers';
 import { formatPrice } from '../utils/priceHelpers';
 import useIntersectionObserver from '../hooks/useIntersectionObserver';
+import { ROUTES, LABELS } from '../utils/constants';
 
 function ExecutiveCategoryPage() {
   const { addToCart } = useCart();
@@ -55,9 +56,7 @@ function ExecutiveCategoryPage() {
         {/* 1. Premium Page Header */}
         <div className="mb-12 border-b border-stone-200 pb-8">
           <nav className="flex items-center text-sm text-stone-500 mb-6 overflow-x-auto whitespace-nowrap">
-            <a href="/" className="hover:text-stone-900 transition-colors">Ana Sayfa</a>
-            <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
-            <a href="/products" className="hover:text-stone-900 transition-colors">Kategoriler</a>
+            <a href={ROUTES.HOME} className="hover:text-stone-900 transition-colors">{LABELS.HOME}</a>
             <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
             <span className="text-stone-900 font-medium">{executiveCategory?.name || 'Yönetici Mobilyaları'}</span>
           </nav>
@@ -65,8 +64,8 @@ function ExecutiveCategoryPage() {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="w-5 h-5 text-red-600" />
-                <span className="text-xs font-semibold text-red-600 uppercase tracking-wide">Premium Koleksiyon</span>
+                <Sparkles className="w-5 h-5 text-primary-600" />
+                <span className="text-xs font-semibold text-primary-600 uppercase tracking-wide">Premium Koleksiyon</span>
               </div>
               <h1 className="text-4xl md:text-5xl font-serif text-stone-900 mb-3">
                 {executiveCategory?.name || 'Yönetici Mobilyaları'}
@@ -94,8 +93,8 @@ function ExecutiveCategoryPage() {
                 className="bg-white rounded-lg border border-stone-200 p-4 text-center reveal-up"
                 style={{ transitionDelay: `${index * 50}ms` }}
               >
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-red-50 rounded-lg mb-3">
-                  <FeatureIcon className="w-6 h-6 text-red-600" />
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-primary-50 rounded-lg mb-3">
+                  <FeatureIcon className="w-6 h-6 text-primary-600" />
                 </div>
                 <h3 className="font-semibold text-sm text-stone-900 mb-1">{feature.title}</h3>
                 <p className="text-xs text-stone-500">{feature.description}</p>
@@ -124,7 +123,7 @@ function ExecutiveCategoryPage() {
                 <div
                   key={product._id}
                   ref={productRef}
-                  className="group bg-white rounded-xl overflow-hidden border-2 border-stone-200 hover:border-red-300 hover:shadow-xl transition-all duration-300 flex flex-col reveal-up"
+                  className="group bg-white rounded-xl overflow-hidden border-2 border-stone-200 hover:border-primary-200 hover:shadow-xl transition-all duration-300 flex flex-col reveal-up"
                   style={{ transitionDelay: `${index * 50}ms` }}
                 >
                   <a href={`/product/${product._id}`} className="relative aspect-[4/3] overflow-hidden bg-stone-100 block">
@@ -133,22 +132,15 @@ function ExecutiveCategoryPage() {
                       alt={product.name}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
-                    {product.stock && product.stock > 0 && (
-                      <div className="absolute top-3 left-3">
-                        <div className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">
-                          STOKTA
-                        </div>
-                      </div>
-                    )}
                     <div className="absolute top-3 right-3">
-                      <div className="bg-red-600/90 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">
+                      <div className="bg-primary-600/90 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">
                         PREMIUM
                       </div>
                     </div>
                   </a>
                   <div className="p-5 flex flex-col flex-1">
                     <a href={`/product/${product._id}`}>
-                      <h3 className="font-serif text-lg font-semibold text-stone-900 mb-2 group-hover:text-red-600 transition-colors">
+                      <h3 className="font-serif text-lg font-semibold text-stone-900 mb-2 group-hover:text-primary-600 transition-colors">
                         {product.name}
                       </h3>
                     </a>
@@ -159,7 +151,7 @@ function ExecutiveCategoryPage() {
                     <div className="mt-auto pt-4 border-t border-stone-100">
                       <div className="flex items-center justify-between gap-3 mb-3">
                         <div>
-                          <div className="font-bold text-lg text-red-600">
+                          <div className="font-bold text-lg text-primary-600">
                             {formatPrice(product.price, product.currency)}
                           </div>
                         </div>
@@ -167,7 +159,7 @@ function ExecutiveCategoryPage() {
                       <div className="flex items-center gap-2">
                         <a 
                           href={`/product/${product._id}`}
-                          className="flex-1 text-center text-sm font-semibold text-white bg-red-600 px-4 py-2.5 rounded-lg hover:bg-red-700 transition-colors"
+                          className="flex-1 text-center text-sm font-semibold text-white bg-primary-600 px-4 py-2.5 rounded-lg hover:bg-primary-700 transition-colors"
                         >
                           Detayları Gör
                         </a>
@@ -200,7 +192,7 @@ function ExecutiveCategoryPage() {
           ) : (
             <div className="text-center py-16 text-stone-600">
               <p className="mb-4">Bu kategoride ürün bulunamadı.</p>
-              <a href="/products" className="text-red-600 hover:text-red-700">Tüm Ürünleri Gör →</a>
+              <a href={ROUTES.PRODUCTS} className="text-primary-600 hover:text-primary-700">Tüm Ürünleri Gör →</a>
             </div>
           )}
         </div>
@@ -216,8 +208,8 @@ function ExecutiveCategoryPage() {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <a
-                href="/contact"
-                className="inline-flex items-center gap-2 bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors shadow-lg"
+                href={ROUTES.CONTACT}
+                className="inline-flex items-center gap-2 bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors shadow-lg"
               >
                 Teklif Al
                 <ArrowRight className="w-5 h-5" />

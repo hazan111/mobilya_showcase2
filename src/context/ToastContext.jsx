@@ -39,7 +39,7 @@ function ToastContainer({ toasts, removeToast }) {
           className="bg-white border border-stone-200 rounded-lg shadow-xl p-4 min-w-[300px] max-w-[400px] flex items-start gap-3 pointer-events-auto animate-slide-in-right"
         >
           <div className={`flex-shrink-0 ${
-            toast.type === 'success' ? 'text-green-600' : 'text-red-600'
+            toast.type === 'success' ? 'text-green-600' : 'text-primary-600'
           }`}>
             {toast.type === 'success' ? (
               <CheckCircle className="w-5 h-5" />

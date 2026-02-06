@@ -8,12 +8,12 @@ export default defineConfig({
     open: true,
     proxy: {
       '/catalog': {
-        target: 'http://localhost:3002',
+        target: 'https://epanelapi.wmbyazilim.com',
         changeOrigin: true,
         secure: false,
       },
       '/uploads': {
-        target: 'http://localhost:3002',
+        target: 'https://epanelapi.wmbyazilim.com',
         changeOrigin: true,
         secure: false,
       }

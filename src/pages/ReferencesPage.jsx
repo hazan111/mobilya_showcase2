@@ -1,6 +1,7 @@
 import React from 'react';
 import { ChevronRight, Building2, Quote } from 'lucide-react';
 import useIntersectionObserver from '../hooks/useIntersectionObserver';
+import { ROUTES, LABELS } from '../utils/constants';
 
 function ReferencesPage() {
   // Reference clients
@@ -102,13 +103,13 @@ function ReferencesPage() {
   ];
 
   return (
-    <div className="pt-24 pb-12 px-4 md:px-8 bg-white min-h-screen">
+    <div className="pt-24 pb-12 px-4 md:px-8 bg-surface min-h-screen">
       <div className="max-w-6xl mx-auto">
         
         {/* Header */}
         <div className="mb-10 border-b border-stone-100 pb-8">
           <nav className="flex items-center text-sm text-stone-500 mb-6 overflow-x-auto whitespace-nowrap">
-            <a href="/" className="hover:text-stone-900 transition-colors">Ana Sayfa</a>
+            <a href={ROUTES.HOME} className="hover:text-stone-900 transition-colors">{LABELS.HOME}</a>
             <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
             <span className="text-stone-900 font-medium">Referanslar</span>
           </nav>
@@ -188,8 +189,8 @@ function ReferencesPage() {
                     style={{ transitionDelay: `${index * 100}ms` }}
                   >
                     <div className="flex items-start gap-3 mb-4">
-                      <div className="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <Quote className="w-5 h-5 text-red-600" />
+                      <div className="w-10 h-10 bg-primary-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Quote className="w-5 h-5 text-primary-600" />
                       </div>
                       <div className="flex-1">
                         <div className="font-semibold text-sm text-stone-900 mb-1">

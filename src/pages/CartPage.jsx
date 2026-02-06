@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronRight, ShoppingCart, Trash2, Plus, Minus, MessageCircle, X } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
+import { ROUTES, LABELS, WHATSAPP_PHONE } from '../utils/constants';
 
 function CartPage() {
   const { cart, removeFromCart, updateQuantity, clearCart, getCartTotal } = useCart();
@@ -41,8 +42,7 @@ function CartPage() {
       return;
     }
 
-    // WhatsApp numarası (90 ile başlayan format, + işareti olmadan)
-    const phoneNumber = '905377979125'; // 537 797 91 25
+    const phoneNumber = WHATSAPP_PHONE;
     const total = getCartTotal();
 
     // Sepet içeriğini formatla
@@ -75,21 +75,21 @@ Lütfen benimle iletişime geçin.`;
 
   if (cart.length === 0) {
     return (
-      <div className="pt-24 pb-12 px-4 md:px-8 bg-white min-h-screen">
+      <div className="pt-24 pb-12 px-4 sm:px-6 md:px-8 bg-surface min-h-screen">
         <div className="max-w-4xl mx-auto">
           <nav className="flex items-center text-sm text-stone-500 mb-6 overflow-x-auto whitespace-nowrap">
-            <a href="/" className="hover:text-stone-900 transition-colors">Ana Sayfa</a>
+            <a href={ROUTES.HOME} className="hover:text-stone-900 transition-colors">{LABELS.HOME}</a>
             <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
-            <span className="text-stone-900 font-medium">Sepet</span>
+            <span className="text-stone-900 font-medium">{LABELS.CART}</span>
           </nav>
 
-          <div className="text-center py-16">
-            <ShoppingCart className="w-16 h-16 text-stone-300 mx-auto mb-4" />
-            <h2 className="text-2xl font-serif text-stone-900 mb-2">Sepetiniz Boş</h2>
-            <p className="text-stone-600 mb-6">Sepetinize henüz ürün eklemediniz.</p>
+          <div className="text-center py-12 sm:py-16">
+            <ShoppingCart className="w-14 h-14 sm:w-16 sm:h-16 text-stone-300 mx-auto mb-4" />
+            <h2 className="text-xl sm:text-2xl font-serif text-stone-900 mb-2">Sepetiniz Boş</h2>
+            <p className="text-stone-600 mb-6 text-sm sm:text-base">Sepetinize henüz ürün eklemediniz.</p>
             <a
-              href="/products"
-              className="inline-flex items-center gap-2 bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors"
+              href={ROUTES.PRODUCTS}
+              className="inline-flex items-center justify-center gap-2 bg-primary-600 text-white px-6 py-3.5 min-h-[48px] rounded-lg font-semibold hover:bg-primary-700 transition-colors"
             >
               Ürünleri İncele
             </a>
@@ -100,19 +100,19 @@ Lütfen benimle iletişime geçin.`;
   }
 
   return (
-    <div className="pt-24 pb-12 px-4 md:px-8 bg-white min-h-screen">
+    <div className="pt-24 pb-12 px-4 sm:px-6 md:px-8 bg-surface min-h-screen">
       <div className="max-w-4xl mx-auto">
         <nav className="flex items-center text-sm text-stone-500 mb-6 overflow-x-auto whitespace-nowrap">
-          <a href="/" className="hover:text-stone-900 transition-colors">Ana Sayfa</a>
+          <a href={ROUTES.HOME} className="hover:text-stone-900 transition-colors">{LABELS.HOME}</a>
           <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
-          <span className="text-stone-900 font-medium">Sepet</span>
+          <span className="text-stone-900 font-medium">{LABELS.CART}</span>
         </nav>
 
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl md:text-4xl font-serif text-stone-900">Sepetim</h1>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif text-stone-900">Sepetim</h1>
           <button
             onClick={clearCart}
-            className="text-sm text-stone-500 hover:text-red-600 transition-colors"
+            className="text-sm text-stone-500 hover:text-primary-600 transition-colors"
           >
             Sepeti Temizle
           </button>
@@ -144,7 +144,7 @@ Lütfen benimle iletişime geçin.`;
                     <div className="flex items-start justify-between mb-2">
                       <div>
                         <a href={`/product/${item.id}`}>
-                          <h3 className="font-serif text-lg font-semibold text-stone-900 hover:text-red-600 transition-colors">
+                          <h3 className="font-serif text-lg font-semibold text-stone-900 hover:text-primary-600 transition-colors">
                             {item.name}
                           </h3>
                         </a>
@@ -152,7 +152,7 @@ Lütfen benimle iletişime geçin.`;
                       </div>
                       <button
                         onClick={() => removeFromCart(item.id)}
-                        className="p-2 hover:bg-red-50 rounded-lg transition-colors text-stone-400 hover:text-red-600"
+                        className="p-2 hover:bg-primary-50 rounded-lg transition-colors text-stone-400 hover:text-primary-600"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -163,20 +163,20 @@ Lütfen benimle iletişime geçin.`;
                       <div className="flex items-center gap-3">
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="w-8 h-8 flex items-center justify-center border border-stone-300 rounded-lg hover:bg-stone-50 transition-colors"
+                          className="min-w-[44px] min-h-[44px] w-10 h-10 flex items-center justify-center border border-stone-300 rounded-lg hover:bg-stone-50 transition-colors touch-manipulation"
                         >
                           <Minus className="w-4 h-4" />
                         </button>
                         <span className="w-8 text-center font-semibold">{item.quantity}</span>
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="w-8 h-8 flex items-center justify-center border border-stone-300 rounded-lg hover:bg-stone-50 transition-colors"
+                          className="min-w-[44px] min-h-[44px] w-10 h-10 flex items-center justify-center border border-stone-300 rounded-lg hover:bg-stone-50 transition-colors touch-manipulation"
                         >
                           <Plus className="w-4 h-4" />
                         </button>
                       </div>
                       <div className="text-right">
-                        <div className="font-bold text-red-600">{formatPrice(itemTotal.toString())}</div>
+                        <div className="font-bold text-primary-600">{formatPrice(itemTotal.toString())}</div>
                       </div>
                     </div>
                   </div>
@@ -190,12 +190,12 @@ Lütfen benimle iletişime geçin.`;
         <div className="bg-stone-50 rounded-xl border border-stone-200 p-6 md:p-8">
           <div className="flex items-center justify-between mb-6">
             <span className="text-lg font-semibold text-stone-900">Toplam</span>
-            <span className="text-2xl font-bold text-red-600">{formatPrice(getCartTotal().toString())}</span>
+            <span className="text-2xl font-bold text-primary-600">{formatPrice(getCartTotal().toString())}</span>
           </div>
 
           <button
             onClick={() => setShowWhatsAppForm(true)}
-            className="w-full bg-red-600 text-white font-semibold py-4 px-6 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2 shadow-lg"
+            className="w-full min-h-[48px] bg-primary-600 text-white font-semibold py-4 px-6 rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center gap-2 shadow-lg touch-manipulation"
           >
             <MessageCircle className="w-5 h-5" />
             WhatsApp ile Sipariş Ver
@@ -208,7 +208,7 @@ Lütfen benimle iletişime geçin.`;
             <div className="bg-white rounded-xl max-w-md w-full p-6 md:p-8 relative">
               <button
                 onClick={() => setShowWhatsAppForm(false)}
-                className="absolute top-4 right-4 p-2 hover:bg-stone-100 rounded-lg transition-colors"
+                className="absolute top-4 right-4 min-w-[44px] min-h-[44px] p-2 flex items-center justify-center hover:bg-stone-100 rounded-lg transition-colors touch-manipulation"
               >
                 <X className="w-5 h-5 text-stone-600" />
               </button>
@@ -227,7 +227,7 @@ Lütfen benimle iletişime geçin.`;
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none"
+                    className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
                     placeholder="Adınız"
                   />
                 </div>
@@ -243,7 +243,7 @@ Lütfen benimle iletişime geçin.`;
                     value={formData.surname}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none"
+                    className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
                     placeholder="Soyadınız"
                   />
                 </div>
@@ -259,7 +259,7 @@ Lütfen benimle iletişime geçin.`;
                     value={formData.phone}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none"
+                    className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
                     placeholder="05XX XXX XX XX"
                   />
                 </div>
@@ -267,7 +267,7 @@ Lütfen benimle iletişime geçin.`;
 
               <button
                 onClick={sendToWhatsApp}
-                className="w-full bg-green-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                className="w-full min-h-[48px] bg-green-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2 touch-manipulation"
               >
                 <MessageCircle className="w-5 h-5" />
                 WhatsApp'a Gönder

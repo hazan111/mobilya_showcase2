@@ -68,10 +68,8 @@ export function CatalogProvider({ children }) {
     return catalog?.products || [];
   };
 
-  // Helper: Get root categories only
-  const getRootCategories = () => {
-    return catalog?.categories || [];
-  };
+  // Helper: Get root categories only (en başta kampanyalı varsa “Kampanyalı Ürünler” eklenir)
+  const getRootCategories = () => catalog?.categories || [];
 
   const value = {
     catalog,

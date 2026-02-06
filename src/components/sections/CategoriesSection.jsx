@@ -18,19 +18,19 @@ function CategoriesSection() {
   }
 
   return (
-    <section id="categories" className="py-12 md:py-16 max-w-7xl mx-auto px-4">
+    <section id="categories" className="py-12 sm:py-14 md:py-20 max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
       <div
         ref={revealRef}
-        className="mb-10 reveal-up"
+        className="mb-12 reveal-up"
       >
-        <span className="text-red-600 font-bold tracking-wider text-xs uppercase flex items-center gap-2 mb-3">
-          <span className="w-6 h-[2px] bg-red-600"></span>
+        <span className="text-primary-600 font-semibold text-[11px] uppercase tracking-overline flex items-center gap-2 mb-3">
+          <span className="w-5 h-px bg-primary-600" />
           Ürün Kategorileri
         </span>
-        <h2 className="text-3xl md:text-4xl font-serif text-stone-900 mb-3">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-semibold tracking-tight text-stone-900 mb-3">
           Ofis ve Ticari Alan Mobilyaları
         </h2>
-        <p className="text-stone-600 max-w-2xl">
+        <p className="text-stone-500 max-w-2xl text-base leading-relaxed">
           Kurumsal ihtiyaçlarınıza uygun geniş ürün yelpazemizden ihtiyacınıza en uygun çözümü bulun.
         </p>
       </div>
@@ -72,7 +72,7 @@ function CategoryCard({ category, delay = '100ms' }) {
   const productCount = getCategoryProductCount(category);
   const imageUrl = getCategoryImageUrl(category, 'medium');
   const categoryUrl = `/category/${category._id}`;
-  const hasImage = imageUrl !== null;
+  const hasImage = imageUrl != null;
 
   // Görsel olmayan kategoriler için farklı kart tasarımı
   if (!hasImage) {
@@ -80,17 +80,17 @@ function CategoryCard({ category, delay = '100ms' }) {
       <a
         href={categoryUrl}
         ref={revealRef}
-        className="group relative block rounded-xl bg-gradient-to-br from-stone-50 to-stone-100 border-2 border-dashed border-stone-300 hover:border-red-300 hover:shadow-md transition-all duration-300 reveal-up"
+        className="group relative block rounded-card bg-gradient-to-br from-stone-50 to-stone-100/80 border border-dashed border-stone-200 hover:border-primary-200 hover:shadow-card transition-all duration-300 reveal-up"
         style={{ transitionDelay: delay }}
       >
         <div className="p-6 md:p-8 flex flex-col items-center text-center min-h-[280px] justify-center">
           {/* Icon */}
-          <div className="mb-4 w-16 h-16 rounded-full bg-stone-200 group-hover:bg-red-100 flex items-center justify-center transition-colors duration-300">
-            <Folder className="w-8 h-8 text-stone-500 group-hover:text-red-600 transition-colors" />
+          <div className="mb-4 w-16 h-16 rounded-full bg-stone-200 group-hover:bg-primary-100 flex items-center justify-center transition-colors duration-300">
+            <Folder className="w-8 h-8 text-stone-500 group-hover:text-primary-600 transition-colors" />
           </div>
           
           {/* Title */}
-          <h3 className="text-xl font-serif font-semibold text-stone-900 mb-2 group-hover:text-red-600 transition-colors">
+          <h3 className="text-xl font-serif font-semibold text-stone-900 mb-2 group-hover:text-primary-600 transition-colors">
             {category.name}
           </h3>
           
@@ -110,7 +110,7 @@ function CategoryCard({ category, delay = '100ms' }) {
           )}
           
           {/* CTA */}
-          <div className="flex items-center gap-1 text-red-600 font-semibold text-sm group-hover:gap-2 transition-all mt-auto">
+          <div className="flex items-center gap-1 text-primary-600 font-semibold text-sm group-hover:gap-2 transition-all mt-auto">
             <span>İncele</span>
             <ArrowRight className="w-4 h-4" />
           </div>
@@ -124,7 +124,7 @@ function CategoryCard({ category, delay = '100ms' }) {
     <a
       href={categoryUrl}
       ref={revealRef}
-      className="group relative block overflow-hidden rounded-xl bg-white border border-stone-200 hover:border-red-300 hover:shadow-lg transition-all duration-300 reveal-up"
+      className="group relative block overflow-hidden rounded-card bg-surface-elevated border border-primary-200 shadow-soft hover:border-primary-300 hover:shadow-card transition-all duration-200 reveal-up"
       style={{ transitionDelay: delay }}
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-stone-100">
@@ -146,18 +146,18 @@ function CategoryCard({ category, delay = '100ms' }) {
       </div>
 
       <div className="p-5">
-        <h3 className="text-xl font-serif font-semibold text-stone-900 mb-1 group-hover:text-red-600 transition-colors">
+        <h3 className="text-xl font-serif font-semibold text-stone-900 mb-1 group-hover:text-primary-600 transition-colors">
           {category.name}
         </h3>
         <p className="text-sm text-stone-500 mb-3">
           {category.description || 'Kurumsal ihtiyaçlarınıza özel çözümler'}
         </p>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-xs text-stone-600">
+          <div className="flex items-center gap-1.5 text-xs text-stone-500">
             <Package className="w-3.5 h-3.5" />
             <span>Hızlı teslimat</span>
           </div>
-          <div className="flex items-center gap-1 text-red-600 font-semibold text-sm group-hover:gap-2 transition-all">
+          <div className="flex items-center gap-1 text-primary-600 font-semibold text-sm group-hover:gap-2 transition-all">
             <span>İncele</span>
             <ArrowRight className="w-4 h-4" />
           </div>

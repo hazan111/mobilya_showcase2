@@ -7,6 +7,7 @@ import { useCatalog } from '../context/CatalogContext';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
 import { getProductAllImages } from '../utils/imageHelpers';
+import { ROUTES, LABELS } from '../utils/constants';
 
 function ProductDetailPage() {
   const [activeImage, setActiveImage] = useState(0);
@@ -123,22 +124,9 @@ function ProductDetailPage() {
     return categories;
   };
 
-  const handleAddToCart = () => {
-    if (!product) return;
-    const cartProduct = {
-      id: product._id,
-      _id: product._id,
-      name: product.name,
-      price: formatPrice(product.price, product.currency),
-      image: getProductImages()[0],
-    };
-    addToCart(cartProduct);
-    showToast(`${product.name} sepete eklendi!`, 'success');
-  };
-
   if (loading) {
     return (
-      <div className="pt-24 pb-12 px-4 md:px-8 bg-white min-h-screen">
+      <div className="pt-24 pb-12 px-4 sm:px-6 md:px-8 bg-surface min-h-screen">
         <div className="max-w-7xl mx-auto text-center text-stone-600">
           Ürün detayları yükleniyor...
         </div>
@@ -148,34 +136,45 @@ function ProductDetailPage() {
 
   if (!product) {
     return (
-      <div className="pt-24 pb-12 px-4 md:px-8 bg-white min-h-screen">
+      <div className="pt-24 pb-12 px-4 sm:px-6 md:px-8 bg-surface min-h-screen">
         <div className="max-w-7xl mx-auto text-center text-stone-600">
           <h1 className="text-2xl mb-4">Ürün bulunamadı</h1>
-          <a href="/products" className="text-red-600 hover:text-red-700">Ürünlere dön →</a>
+          <a href={ROUTES.PRODUCTS} className="text-primary-600 hover:text-primary-700">Ürünlere dön →</a>
         </div>
       </div>
     );
   }
 
   const productImages = getProductImages();
-  const isInStock = product.stock && product.stock > 0;
+  const displayPrice = product.kampanyaDaMi && product.kampanyaliFiyat != null ? product.kampanyaliFiyat : product.price;
+  const handleAddToCart = () => {
+    const cartProduct = {
+      id: product._id,
+      _id: product._id,
+      name: product.name,
+      price: formatPrice(displayPrice, product.currency),
+      image: productImages?.[0],
+    };
+    addToCart(cartProduct);
+    showToast(`${product.name} sepete eklendi!`, 'success');
+  };
 
   return (
-    <div className="pt-24 pb-12 px-4 md:px-8 bg-white min-h-screen">
+    <div className="pt-24 pb-12 px-4 sm:px-6 md:px-8 bg-surface min-h-screen">
       <div className="max-w-7xl mx-auto">
         
         {/* Breadcrumb */}
         <nav className="flex items-center text-sm text-stone-500 mb-6 overflow-x-auto whitespace-nowrap">
-          <a href="/" className="hover:text-stone-900 transition-colors">Ana Sayfa</a>
+          <a href={ROUTES.HOME} className="hover:text-stone-900 transition-colors">{LABELS.HOME}</a>
           <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
-          <a href="/products" className="hover:text-stone-900 transition-colors">{category?.name || 'Ürünler'}</a>
+          <a href={category?._id ? `/category/${category._id}` : ROUTES.PRODUCTS} className="hover:text-stone-900 transition-colors">{category?.name || LABELS.PRODUCTS}</a>
           <ChevronRight className="w-4 h-4 mx-2 flex-shrink-0" />
           <span className="text-stone-900 font-medium">{product.name}</span>
         </nav>
 
-        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 mb-16">
+        <div className="grid lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 mb-12 sm:mb-16">
           {/* Left: Product Images */}
-          <div className="lg:col-span-7 space-y-4">
+          <div className="lg:col-span-7 space-y-3 sm:space-y-4">
             <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-stone-100 shadow-sm border border-stone-100">
               {productImages && productImages.length > 0 && productImages[activeImage] ? (
                 <img 
@@ -188,11 +187,6 @@ function ProductDetailPage() {
                   <Package className="w-16 h-16 text-stone-400" />
                 </div>
               )}
-              {isInStock && (
-                <div className="absolute top-4 left-4 bg-green-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
-                  STOKTA
-                </div>
-              )}
             </div>
             {productImages.length > 1 && (
               <div className="grid grid-cols-4 gap-4">
@@ -201,7 +195,7 @@ function ProductDetailPage() {
                     key={idx}
                     onClick={() => setActiveImage(idx)}
                     className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
-                      activeImage === idx ? 'border-red-600 ring-2 ring-red-100' : 'border-transparent hover:border-stone-300'
+                      activeImage === idx ? 'border-primary-600 ring-2 ring-primary-100' : 'border-transparent hover:border-stone-300'
                     }`}
                   >
                     <img src={img} alt="" className="w-full h-full object-cover" />
@@ -215,7 +209,7 @@ function ProductDetailPage() {
           <div className="lg:col-span-5">
             <div className="sticky top-28 space-y-6">
               <div>
-                <h1 className="text-3xl md:text-4xl font-serif text-stone-900 mb-2 leading-tight">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif text-stone-900 mb-2 leading-tight">
                   {product.name}
                 </h1>
                 <div className="flex items-center gap-2 mb-4">
@@ -233,21 +227,35 @@ function ProductDetailPage() {
 
               {/* Price Block */}
               <div className="bg-stone-50 rounded-xl p-6 border border-stone-200">
-                <div className="flex items-end gap-3 mb-6 flex-wrap">
-                  <span className="text-3xl font-bold text-red-600">
-                    {formatPrice(product.price, product.currency)}
+                {product.kampanyaDaMi && product.kampanyaOrani != null && (
+                  <span className="inline-block text-xs font-semibold text-white bg-primary-600 px-3 py-1.5 rounded mb-3">
+                    %{product.kampanyaOrani} indirim
                   </span>
+                )}
+                <div className="flex items-end gap-3 mb-6 flex-wrap">
+                  {product.kampanyaDaMi && product.kampanyaliFiyat != null ? (
+                    <>
+                      <span className="text-lg text-stone-400 line-through">{formatPrice(product.price, product.currency)}</span>
+                      <span className="text-3xl font-bold text-primary-600">
+                        {formatPrice(product.kampanyaliFiyat, product.currency)}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-3xl font-bold text-primary-600">
+                      {formatPrice(product.price, product.currency)}
+                    </span>
+                  )}
                 </div>
 
                 <div className="space-y-3 mb-6">
                   <button 
                     onClick={handleAddToCart}
-                    className="w-full bg-red-600 text-white font-semibold py-3.5 px-6 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-red-100"
+                    className="w-full min-h-[48px] bg-primary-600 text-white font-semibold py-3.5 px-6 rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-primary-100 touch-manipulation"
                   >
                     <ShoppingCart className="w-5 h-5" />
                     Sepete Ekle
                   </button>
-                  <button className="w-full bg-white text-stone-900 font-semibold py-3.5 px-6 rounded-lg border border-stone-300 hover:bg-stone-50 transition-colors flex items-center justify-center gap-2">
+                  <button className="w-full min-h-[48px] bg-white text-stone-900 font-semibold py-3.5 px-6 rounded-lg border border-stone-300 hover:bg-stone-50 transition-colors flex items-center justify-center gap-2 touch-manipulation">
                     <MessageSquare className="w-5 h-5" />
                     Proje Danışmanı
                   </button>
@@ -273,7 +281,7 @@ function ProductDetailPage() {
               <ul className="space-y-2">
                 {getProductFeatures().map((feature, idx) => (
                   <li key={idx} className="flex items-center gap-2 text-sm text-stone-600">
-                    <CheckCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
+                    <CheckCircle className="w-4 h-4 text-primary-600 flex-shrink-0" />
                     {feature}
                   </li>
                 ))}
@@ -291,17 +299,19 @@ function ProductDetailPage() {
                   <h2 className="text-2xl font-serif font-semibold text-stone-900 mb-6">
                     {category.categoryName}
                   </h2>
-                  <div className="bg-white rounded-xl border border-stone-200 overflow-hidden">
-                    <table className="w-full text-sm text-left">
-                      <tbody>
-                        {category.specs.map((spec, idx) => (
-                          <tr key={`${category.categoryId}-${spec.label}-${idx}`} className="border-b border-stone-100 last:border-0 hover:bg-stone-50 transition-colors">
-                            <th className="py-4 px-6 font-medium text-stone-900 w-1/3 bg-stone-50/50">{spec.label}</th>
-                            <td className="py-4 px-6 text-stone-600">{spec.value}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                  <div className="bg-surface-elevated rounded-xl border border-primary-200 overflow-hidden">
+                    <div className="table-scroll-wrap">
+                      <table className="w-full text-sm text-left min-w-[280px]">
+                        <tbody>
+                          {category.specs.map((spec, idx) => (
+                            <tr key={`${category.categoryId}-${spec.label}-${idx}`} className="border-b border-stone-100 last:border-0 hover:bg-stone-50 transition-colors">
+                              <th className="py-3 px-4 sm:py-4 sm:px-6 font-medium text-stone-900 w-1/3 bg-stone-50/50 whitespace-nowrap">{spec.label}</th>
+                              <td className="py-3 px-4 sm:py-4 sm:px-6 text-stone-600">{spec.value}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -313,7 +323,7 @@ function ProductDetailPage() {
                   Kurumsal Güvence
                 </h3>
                 <p className="text-sm text-blue-800 leading-relaxed">
-                  Bu ürün WMB Mobilya kalite standartlarına uygun olarak üretilmiştir. ISO 9001 kalite yönetim sistemi belgeli tesislerimizde, çevreye duyarlı malzemeler kullanılarak imal edilmiştir.
+                  Bu ürün Sofa Design kalite standartlarına uygun olarak üretilmiştir. ISO 9001 kalite yönetim sistemi belgeli tesislerimizde, çevreye duyarlı malzemeler kullanılarak imal edilmiştir.
                 </p>
               </div>
             </div>
@@ -351,7 +361,7 @@ function ProductDetailPage() {
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-serif font-semibold text-stone-900">Benzer Ürünler</h2>
             {category && (
-              <a href={`/category/${category._id}`} className="text-red-600 font-medium text-sm hover:text-red-700 flex items-center gap-1">
+              <a href={`/category/${category._id}`} className="text-primary-600 font-medium text-sm hover:text-primary-700 flex items-center gap-1">
                 Tümünü Gör <ArrowRight className="w-4 h-4" />
               </a>
             )}
@@ -367,16 +377,28 @@ function ProductDetailPage() {
                   <a 
                     key={p._id}
                     href={`/product/${p._id}`}
-                    className="group bg-white rounded-xl overflow-hidden border border-stone-200 hover:border-red-300 hover:shadow-lg transition-all duration-300 block"
+                    className="group bg-white rounded-xl overflow-hidden border border-stone-200 hover:border-primary-200 hover:shadow-lg transition-all duration-300 block"
                   >
                     <div className="relative aspect-[4/3] bg-stone-100 overflow-hidden">
                       <img src={relatedImage} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
                     </div>
                     <div className="p-4">
+                      {p.kampanyaDaMi && p.kampanyaOrani != null && (
+                        <span className="inline-block text-[10px] font-semibold text-white bg-primary-600 px-2 py-0.5 rounded mb-1">%{p.kampanyaOrani} indirim</span>
+                      )}
                       <h3 className="font-serif font-medium text-stone-900 mb-1 truncate">{p.name}</h3>
-                      <div className="flex items-center justify-between">
-                        <span className="text-red-600 font-bold text-sm">{formatPrice(p.price, p.currency)}</span>
-                        <span className="text-xs text-stone-500 group-hover:text-red-600">İncele →</span>
+                      <div className="flex items-center justify-between gap-2">
+                        <div>
+                          {p.kampanyaDaMi && p.kampanyaliFiyat != null ? (
+                            <>
+                              <span className="text-xs text-stone-400 line-through block">{formatPrice(p.price, p.currency)}</span>
+                              <span className="text-primary-600 font-bold text-sm">{formatPrice(p.kampanyaliFiyat, p.currency)}</span>
+                            </>
+                          ) : (
+                            <span className="text-primary-600 font-bold text-sm">{formatPrice(p.price, p.currency)}</span>
+                          )}
+                        </div>
+                        <span className="text-xs text-stone-500 group-hover:text-primary-600 flex-shrink-0">İncele →</span>
                       </div>
                     </div>
                   </a>
