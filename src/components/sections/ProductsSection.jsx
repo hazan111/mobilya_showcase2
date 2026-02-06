@@ -175,9 +175,10 @@ function ProductCard({ product, delay = '100ms' }) {
           </div>
           <a
             href={`/product/${product._id}`}
-            className="inline-flex items-center gap-1.5 text-primary-600 font-semibold text-sm hover:gap-2 transition-all"
+            className="flex items-center justify-center p-2 text-primary-600 border border-primary-100 rounded hover:bg-primary-50 transition-colors"
+            title="Detay"
+            aria-label={`${product.name} detay`}
           >
-            Detay
             <ArrowRight className="w-4 h-4" />
           </a>
         </div>

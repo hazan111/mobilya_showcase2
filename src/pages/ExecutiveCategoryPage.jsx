@@ -159,9 +159,11 @@ function ExecutiveCategoryPage() {
                       <div className="flex items-center gap-2">
                         <a 
                           href={`/product/${product._id}`}
-                          className="flex-1 text-center text-sm font-semibold text-white bg-primary-600 px-4 py-2.5 rounded-lg hover:bg-primary-700 transition-colors"
+                          className="flex items-center justify-center p-2.5 text-primary-600 border border-primary-100 rounded-lg hover:bg-primary-50 transition-colors"
+                          title="Detay"
+                          aria-label={`${product.name} detay`}
                         >
-                          Detayları Gör
+                          <ArrowRight className="w-5 h-5" />
                         </a>
                         <button 
                           onClick={(e) => {

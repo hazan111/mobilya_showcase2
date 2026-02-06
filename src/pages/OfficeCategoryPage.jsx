@@ -105,7 +105,7 @@ function OfficeCategoryPage() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <button 
+<button
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
@@ -119,15 +119,18 @@ function OfficeCategoryPage() {
                             addToCart(cartProduct);
                             showToast(`${product.name} sepete eklendi!`, 'success');
                           }}
-                          className="text-xs font-semibold text-stone-900 bg-stone-100 hover:bg-stone-200 px-3 py-1.5 rounded transition-colors flex items-center gap-1"
+                          className="flex items-center justify-center p-2 text-stone-900 bg-stone-100 hover:bg-stone-200 rounded transition-colors"
+                          title="Sepete Ekle"
                         >
-                          <ShoppingCart className="w-3 h-3" />
+                          <ShoppingCart className="w-4 h-4" />
                         </button>
                         <a 
                           href={`/product/${product._id}`}
-                          className="text-xs font-semibold text-primary-600 border border-primary-100 px-3 py-1.5 rounded hover:bg-primary-50 transition-colors"
+                          className="flex items-center justify-center p-2 text-primary-600 border border-primary-100 rounded hover:bg-primary-50 transition-colors"
+                          title="Detay"
+                          aria-label={`${product.name} detay`}
                         >
-                          Detay
+                          <ArrowRight className="w-4 h-4" />
                         </a>
                       </div>
                     </div>

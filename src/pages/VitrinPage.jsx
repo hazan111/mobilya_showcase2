@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { ShoppingCart, Folder, Filter, ChevronDown, Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ShoppingCart, Folder, Filter, ChevronDown, Check, ChevronLeft, ChevronRight, ChevronUp, LayoutGrid, List, ArrowRight } from 'lucide-react';
 import { useCatalog } from '../context/CatalogContext';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
@@ -17,6 +17,8 @@ function VitrinPage() {
   const [sortBy, setSortBy] = useState('recommended');
   const [showFilters, setShowFilters] = useState(false);
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
+  const [categoriesExpanded, setCategoriesExpanded] = useState(true);
+  const [mobileGridView, setMobileGridView] = useState('list'); // 'list' = 1 col, 'grid' = 2 cols
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
   const sortDropdownRef = useRef(null);
@@ -103,11 +105,30 @@ function VitrinPage() {
         {/* 1. Kategoriler - lg'de üst satır sağ sütun */}
         <div className="order-1 min-w-0 lg:col-start-2 lg:row-start-1 lg:max-w-6xl">
           <section className="mb-14">
-            <h2 className="text-[10px] font-semibold text-stone-500 uppercase tracking-overline mb-3">
-              Kategoriler
-            </h2>
+            <button
+              type="button"
+              onClick={() => setCategoriesExpanded(!categoriesExpanded)}
+              className="flex items-center justify-between w-full text-left mb-3 group"
+              aria-expanded={categoriesExpanded}
+              aria-label={categoriesExpanded ? 'Kategorileri gizle' : 'Kategorileri göster'}
+            >
+              <h2 className="text-[10px] font-semibold text-stone-500 uppercase tracking-overline group-hover:text-stone-700 transition-colors">
+                Kategoriler
+              </h2>
+              <span className="flex items-center justify-center w-8 h-8 rounded-lg border border-stone-200 bg-white text-stone-600 group-hover:bg-stone-50 group-hover:border-stone-300 transition-colors">
+                {categoriesExpanded ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+              </span>
+            </button>
             {rootCategories.length > 0 && (
-              <div className="flex items-center gap-1 min-w-0">
+              <div
+                className="grid transition-[grid-template-rows] duration-300 ease-in-out"
+                style={{ gridTemplateRows: categoriesExpanded ? '1fr' : '0fr' }}
+              >
+                <div className="flex items-center justify-center gap-1 min-w-0 overflow-hidden min-h-0 w-full">
                 {rootCategories.length > 1 && (
                   <button
                     type="button"
@@ -119,10 +140,10 @@ function VitrinPage() {
                     <ChevronLeft className="w-5 h-5" />
                   </button>
                 )}
-                <div className="flex-1 min-w-0 overflow-hidden">
+                <div className="flex-1 min-w-0 overflow-hidden flex justify-center">
                   <div
                     ref={categoriesScrollRef}
-                    className="flex flex-nowrap gap-2 overflow-x-auto pb-2 scroll-smooth scrollbar-hide"
+                    className="flex flex-nowrap gap-2 overflow-x-auto pb-2 scroll-smooth scrollbar-hide justify-center max-w-full"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                   >
                     {rootCategories.map((cat) => {
@@ -139,6 +160,7 @@ function VitrinPage() {
                               <img
                                 src={imageUrl}
                                 alt={cat.name}
+                                loading="lazy"
                                 className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-300 ease-out"
                               />
                             ) : (
@@ -173,6 +195,7 @@ function VitrinPage() {
                     <ChevronRight className="w-5 h-5" />
                   </button>
                 )}
+                </div>
               </div>
             )}
           </section>
@@ -247,23 +270,43 @@ function VitrinPage() {
 
         {/* 3. Ürünler - lg'de alt satır sağ sütun (filtre ile üst hizalı) */}
         <div className="order-3 min-w-0 lg:col-start-2 lg:row-start-2 lg:max-w-6xl">
-          {!showFilters && (
-            <div className="flex justify-end mb-6 lg:hidden">
+          <div className="flex items-center justify-between gap-4 mb-5">
+            <h2 className="text-[11px] font-semibold text-stone-500 uppercase tracking-overline">
+              Ürünler
+            </h2>
+            <div className="flex items-center gap-1 lg:hidden">
               <button
+                type="button"
                 onClick={() => setShowFilters(true)}
-                className="flex items-center gap-2 text-sm font-medium text-stone-700 border border-primary-200 bg-surface-elevated rounded-button px-4 py-2.5 hover:border-primary-300 hover:bg-primary-50 transition-colors"
+                className="flex items-center gap-2 text-sm font-medium text-stone-700 border border-primary-200 bg-surface-elevated rounded-button px-3 py-2 hover:border-primary-300 hover:bg-primary-50 transition-colors"
               >
-                <Filter className="w-4 h-4" /> Filtre & Sırala
+                <Filter className="w-4 h-4" /> Filtre
               </button>
+              <div className="flex rounded-lg border border-stone-200 overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setMobileGridView('list')}
+                  title="Tek sıra"
+                  className={`p-2 transition-colors ${mobileGridView === 'list' ? 'bg-primary-100 text-primary-700' : 'bg-white text-stone-500 hover:bg-stone-50'}`}
+                  aria-pressed={mobileGridView === 'list'}
+                >
+                  <List className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMobileGridView('grid')}
+                  title="2 sütun"
+                  className={`p-2 transition-colors ${mobileGridView === 'grid' ? 'bg-primary-100 text-primary-700' : 'bg-white text-stone-500 hover:bg-stone-50'}`}
+                  aria-pressed={mobileGridView === 'grid'}
+                >
+                  <LayoutGrid className="w-4 h-4" />
+                </button>
+              </div>
             </div>
-          )}
-
-          <h2 className="text-[11px] font-semibold text-stone-500 uppercase tracking-overline mb-5">
-            Ürünler
-          </h2>
+          </div>
 
           {filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className={`grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 ${mobileGridView === 'grid' ? 'grid-cols-2' : 'grid-cols-1'}`}>
               {filteredProducts.map((product) => (
                 <VitrinProductCard key={product._id} product={product} />
               ))}
@@ -332,6 +375,7 @@ function VitrinProductCard({ product }) {
         <img
           src={getProductImage()}
           alt={product.name}
+          loading="lazy"
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
       </a>
@@ -362,15 +406,18 @@ function VitrinProductCard({ product }) {
             <button
               type="button"
               onClick={handleAddToCart}
-              className="text-xs font-semibold text-stone-900 bg-stone-100 hover:bg-stone-200 px-3 py-1.5 rounded transition-colors flex items-center gap-1"
+              className="flex items-center justify-center p-2 text-stone-900 bg-stone-100 hover:bg-stone-200 rounded transition-colors"
+              title="Sepete Ekle"
             >
-              <ShoppingCart className="w-3 h-3" />
+              <ShoppingCart className="w-4 h-4" />
             </button>
             <a
               href={`/product/${product._id}`}
-              className="text-xs font-semibold text-primary-600 border border-primary-100 px-3 py-1.5 rounded hover:bg-primary-50 transition-colors"
+              className="flex items-center justify-center p-2 text-primary-600 border border-primary-100 rounded hover:bg-primary-50 transition-colors"
+              title="Detay"
+              aria-label={`${product.name} detay`}
             >
-              Detay
+              <ArrowRight className="w-4 h-4" />
             </a>
           </div>
         </div>

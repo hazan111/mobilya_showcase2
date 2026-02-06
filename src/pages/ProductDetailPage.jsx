@@ -198,7 +198,7 @@ function ProductDetailPage() {
                       activeImage === idx ? 'border-primary-600 ring-2 ring-primary-100' : 'border-transparent hover:border-stone-300'
                     }`}
                   >
-                    <img src={img} alt="" className="w-full h-full object-cover" />
+                    <img src={img} alt={`${product.name} - görsel ${idx + 1}`} className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>
@@ -334,7 +334,8 @@ function ProductDetailPage() {
               <div className="group relative h-48 rounded-xl overflow-hidden cursor-pointer">
                 <img 
                   src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?q=80&w=800" 
-                  alt="Ofis Kullanımı" 
+                  alt="Ofis Kullanımı"
+                  loading="lazy" 
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
@@ -344,7 +345,8 @@ function ProductDetailPage() {
               <div className="group relative h-48 rounded-xl overflow-hidden cursor-pointer">
                 <img 
                   src="https://images.unsplash.com/photo-1497215842964-222b430dc094?q=80&w=800" 
-                  alt="Toplantı Odası" 
+                  alt="Toplantı Odası"
+                  loading="lazy" 
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
@@ -380,7 +382,7 @@ function ProductDetailPage() {
                     className="group bg-white rounded-xl overflow-hidden border border-stone-200 hover:border-primary-200 hover:shadow-lg transition-all duration-300 block"
                   >
                     <div className="relative aspect-[4/3] bg-stone-100 overflow-hidden">
-                      <img src={relatedImage} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+                      <img src={relatedImage} alt={p.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
                     </div>
                     <div className="p-4">
                       {p.kampanyaDaMi && p.kampanyaOrani != null && (

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Filter, ChevronRight, ArrowRight, ShoppingCart, ChevronDown, Check, Folder, ChevronLeft } from 'lucide-react';
+import { Filter, ChevronRight, ArrowRight, ShoppingCart, ChevronDown, Check, Folder, ChevronLeft, LayoutGrid, List } from 'lucide-react';
 import { useCatalog } from '../context/CatalogContext';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
@@ -15,6 +15,7 @@ const SORT_OPTIONS = [
 
 function CategoryPage() {
   const [showFilters, setShowFilters] = useState(false);
+  const [mobileGridView, setMobileGridView] = useState('list');
   const [sortBy, setSortBy] = useState('recommended');
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -323,23 +324,43 @@ function CategoryPage() {
 
         {/* 3. Ürünler - lg'de alt satır sağ sütun (filtre ile üst hizalı) */}
         <div className="order-3 min-w-0 lg:col-start-2 lg:row-start-2 lg:max-w-7xl">
-          {/* Mobile: Filtrele butonu */}
-          {!showFilters && (
-            <div className="flex justify-end mb-6 lg:hidden">
-              <button
-                onClick={() => setShowFilters(true)}
-                className="flex items-center gap-2 text-sm font-medium text-stone-700 border border-primary-200 bg-surface-elevated rounded-button px-4 py-2.5 hover:border-primary-300 hover:bg-primary-50 transition-colors"
-              >
-                <Filter className="w-4 h-4" /> Filtre & Sırala
-              </button>
+          <div className="flex items-center justify-between gap-4 mb-5">
+            <h2 className="text-[11px] font-semibold text-stone-500 uppercase tracking-overline">Ürünler</h2>
+            <div className="flex items-center gap-1 lg:hidden">
+              {!showFilters && (
+                <button
+                  onClick={() => setShowFilters(true)}
+                  className="flex items-center gap-2 text-sm font-medium text-stone-700 border border-primary-200 bg-surface-elevated rounded-button px-3 py-2 hover:border-primary-300 hover:bg-primary-50 transition-colors"
+                >
+                  <Filter className="w-4 h-4" /> Filtre
+                </button>
+              )}
+              <div className="flex rounded-lg border border-stone-200 overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setMobileGridView('list')}
+                  title="Tek sıra"
+                  className={`p-2 transition-colors ${mobileGridView === 'list' ? 'bg-primary-100 text-primary-700' : 'bg-white text-stone-500 hover:bg-stone-50'}`}
+                  aria-pressed={mobileGridView === 'list'}
+                >
+                  <List className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMobileGridView('grid')}
+                  title="2 sütun"
+                  className={`p-2 transition-colors ${mobileGridView === 'grid' ? 'bg-primary-100 text-primary-700' : 'bg-white text-stone-500 hover:bg-stone-50'}`}
+                  aria-pressed={mobileGridView === 'grid'}
+                >
+                  <LayoutGrid className="w-4 h-4" />
+                </button>
+              </div>
             </div>
-          )}
-
-          <h2 className="text-[11px] font-semibold text-stone-500 uppercase tracking-overline mb-5">Ürünler</h2>
+          </div>
 
           {/* Products */}
           {sortedProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className={`grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 ${mobileGridView === 'grid' ? 'grid-cols-2' : 'grid-cols-1'}`}>
               {sortedProducts.map((product) => (
                 <CategoryProductCard key={product.id} product={product} />
               ))}
@@ -455,15 +476,18 @@ function CategoryProductCard({ product }) {
           <div className="flex items-center gap-2">
             <button 
               onClick={handleAddToCart}
-              className="text-xs font-semibold text-stone-900 bg-stone-100 hover:bg-stone-200 px-3 py-1.5 rounded transition-colors flex items-center gap-1"
+              className="flex items-center justify-center p-2 text-stone-900 bg-stone-100 hover:bg-stone-200 rounded transition-colors"
+              title="Sepete Ekle"
             >
-              <ShoppingCart className="w-3 h-3" />
+              <ShoppingCart className="w-4 h-4" />
             </button>
             <a 
               href={`/product/${product._id}`}
-              className="text-xs font-semibold text-primary-600 border border-primary-100 px-3 py-1.5 rounded hover:bg-primary-50 transition-colors"
+              className="flex items-center justify-center p-2 text-primary-600 border border-primary-100 rounded hover:bg-primary-50 transition-colors"
+              title="Detay"
+              aria-label={`${product.name} detay`}
             >
-              Detay
+              <ArrowRight className="w-4 h-4" />
             </a>
           </div>
         </div>

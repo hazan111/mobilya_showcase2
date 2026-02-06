@@ -25,12 +25,12 @@ import AllProductsPage from './pages/AllProductsPage';
 
 function App() {
   // Simple routing for demo purposes
-  const path = window.location.pathname;
+  const path = typeof window !== 'undefined' ? window.location.pathname : '/';
 
   // Product detail page - dynamic route
   if (path.startsWith('/product/')) {
     return (
-      <Layout>
+      <Layout path={path}>
         <ProductDetailPage />
       </Layout>
     );
@@ -39,7 +39,7 @@ function App() {
   // Office Category Landing Page - special route
   if (path === '/category/1' || path === '/category/office') {
     return (
-      <Layout>
+      <Layout path={path}>
         <OfficeCategoryPage />
       </Layout>
     );
@@ -48,7 +48,7 @@ function App() {
   // Executive Category Landing Page - special route
   if (path === '/category/2' || path === '/category/executive') {
     return (
-      <Layout>
+      <Layout path={path}>
         <ExecutiveCategoryPage />
       </Layout>
     );
@@ -57,7 +57,7 @@ function App() {
   // Meeting & Shared Space Category Landing Page - special route
   if (path === '/category/3' || path === '/category/meeting') {
     return (
-      <Layout>
+      <Layout path={path}>
         <MeetingCategoryPage />
       </Layout>
     );
@@ -66,7 +66,7 @@ function App() {
   // Storage Category Landing Page - special route
   if (path === '/category/4' || path === '/category/storage') {
     return (
-      <Layout>
+      <Layout path={path}>
         <StorageCategoryPage />
       </Layout>
     );
@@ -75,7 +75,7 @@ function App() {
   // Custom Project Page - special route
   if (path === '/category/5' || path === '/category/project' || path === '/category/custom') {
     return (
-      <Layout>
+      <Layout path={path}>
         <CustomProjectPage />
       </Layout>
     );
@@ -84,7 +84,7 @@ function App() {
   // Category page - dynamic route
   if (path.startsWith('/category/')) {
     return (
-      <Layout>
+      <Layout path={path}>
         <CategoryPage />
       </Layout>
     );
@@ -92,7 +92,7 @@ function App() {
 
   if (path === '/stores') {
     return (
-      <Layout>
+      <Layout path={path}>
         <StoresPage />
       </Layout>
     );
@@ -100,7 +100,7 @@ function App() {
 
   if (path === '/about') {
     return (
-      <Layout>
+      <Layout path={path}>
         <AboutPage />
       </Layout>
     );
@@ -108,7 +108,7 @@ function App() {
 
   if (path === '/bize-ulasin' || path === '/contact') {
     return (
-      <Layout>
+      <Layout path={path}>
         <BizeUlasinPage />
       </Layout>
     );
@@ -116,7 +116,7 @@ function App() {
 
   if (path === '/projects') {
     return (
-      <Layout>
+      <Layout path={path}>
         <ProjectsPage />
       </Layout>
     );
@@ -124,7 +124,7 @@ function App() {
 
   if (path === '/references') {
     return (
-      <Layout>
+      <Layout path={path}>
         <ReferencesPage />
       </Layout>
     );
@@ -132,7 +132,7 @@ function App() {
 
   if (path === '/career') {
     return (
-      <Layout>
+      <Layout path={path}>
         <CareerPage />
       </Layout>
     );
@@ -140,7 +140,7 @@ function App() {
 
   if (path === '/support') {
     return (
-      <Layout>
+      <Layout path={path}>
         <SupportPage />
       </Layout>
     );
@@ -148,7 +148,7 @@ function App() {
 
   if (path === '/warranty' || path === '/guarantee') {
     return (
-      <Layout>
+      <Layout path={path}>
         <WarrantyPage />
       </Layout>
     );
@@ -156,7 +156,7 @@ function App() {
 
   if (path === '/delivery') {
     return (
-      <Layout>
+      <Layout path={path}>
         <DeliveryPage />
       </Layout>
     );
@@ -164,7 +164,7 @@ function App() {
 
   if (path === '/track-order' || path === '/order-tracking') {
     return (
-      <Layout>
+      <Layout path={path}>
         <OrderTrackingPage />
       </Layout>
     );
@@ -172,7 +172,7 @@ function App() {
 
   if (path === '/privacy' || path === '/privacy-policy' || path === '/gizlilik-politikasi') {
     return (
-      <Layout>
+      <Layout path={path}>
         <PrivacyPolicyPage />
       </Layout>
     );
@@ -180,7 +180,7 @@ function App() {
 
   if (path === '/terms' || path === '/terms-of-use' || path === '/kullanim-sartlari') {
     return (
-      <Layout>
+      <Layout path={path}>
         <TermsOfUsePage />
       </Layout>
     );
@@ -188,7 +188,7 @@ function App() {
 
   if (path === '/cart') {
     return (
-      <Layout>
+      <Layout path={path}>
         <CartPage />
       </Layout>
     );
@@ -196,7 +196,7 @@ function App() {
 
   if (path === '/products') {
     return (
-      <Layout>
+      <Layout path={path}>
         <AllProductsPage />
       </Layout>
     );
@@ -204,7 +204,7 @@ function App() {
 
   // Varsayılan: Vitrin sayfası (ana sayfa)
   return (
-    <Layout>
+    <Layout path={path}>
       <VitrinPage />
     </Layout>
   );

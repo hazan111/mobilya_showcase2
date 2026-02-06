@@ -1,11 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { ArrowRight, ShoppingCart, Truck, Shield, Wrench } from 'lucide-react';
+import { ArrowRight, ShoppingCart, Truck, Shield, Wrench, LayoutGrid, List } from 'lucide-react';
 import { useCatalog } from '../context/CatalogContext';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
 
 function AllProductsPage() {
   const [sortBy, setSortBy] = useState('recommended');
+  const [mobileGridView, setMobileGridView] = useState('list');
   const { addToCart } = useCart();
   const { showToast } = useToast();
   const { getAllProducts, loading } = useCatalog();
@@ -52,7 +53,7 @@ function AllProductsPage() {
 
         {/* Sıralama */}
         <div className="flex flex-wrap items-center justify-between gap-4 mb-8 border-b border-stone-100 pb-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 flex-wrap">
             <div className="flex items-center gap-2">
               <span className="text-sm text-stone-500">Sırala:</span>
               <select 
@@ -66,6 +67,26 @@ function AllProductsPage() {
                 <option value="price-desc">Fiyat: Azalan</option>
               </select>
             </div>
+            <div className="flex rounded-lg border border-stone-200 overflow-hidden lg:hidden">
+              <button
+                type="button"
+                onClick={() => setMobileGridView('list')}
+                title="Tek sıra"
+                className={`p-2 transition-colors ${mobileGridView === 'list' ? 'bg-primary-100 text-primary-700' : 'bg-white text-stone-500 hover:bg-stone-50'}`}
+                aria-pressed={mobileGridView === 'list'}
+              >
+                <List className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setMobileGridView('grid')}
+                title="2 sütun"
+                className={`p-2 transition-colors ${mobileGridView === 'grid' ? 'bg-primary-100 text-primary-700' : 'bg-white text-stone-500 hover:bg-stone-50'}`}
+                aria-pressed={mobileGridView === 'grid'}
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </button>
+            </div>
           </div>
           <p className="text-sm text-stone-500">
             {filteredProducts.length} ürün listeleniyor
@@ -76,7 +97,7 @@ function AllProductsPage() {
           <div className="text-center py-16 text-stone-600">Ürünler yükleniyor...</div>
         ) : (
         /* 3. Product Grid */
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+        <div className={`grid gap-6 mb-16 ${mobileGridView === 'grid' ? 'grid-cols-2' : 'grid-cols-1'} md:grid-cols-2 lg:grid-cols-4`}>
           {filteredProducts.map((product) => {
             const getProductImage = () => {
               // Önce isPrimary olan görseli bul
