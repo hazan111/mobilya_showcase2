@@ -207,7 +207,7 @@ function CategoryPage() {
                           <a
                             key={cat._id}
                             href={`/category/${cat._id}`}
-                            className="group flex flex-col rounded-lg bg-white border border-stone-100 shadow-soft hover:shadow-card hover:border-stone-200 transition-all duration-200 overflow-hidden w-[120px] min-w-[120px] sm:w-[130px] sm:min-w-[130px] flex-shrink-0"
+                            className="group flex flex-col rounded-lg bg-white border border-stone-100 shadow-soft hover:shadow-card hover:border-stone-200 transition-all duration-200 overflow-hidden w-[180px] min-w-[180px] sm:w-[200px] sm:min-w-[200px] flex-shrink-0"
                           >
                             <div className="aspect-[4/3] bg-stone-50 overflow-hidden">
                               {imageUrl ? (
@@ -339,7 +339,7 @@ function CategoryPage() {
 
           {/* Products */}
           {sortedProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 gap-4 sm:gap-6">
               {sortedProducts.map((product) => (
                 <CategoryProductCard key={product.id} product={product} />
               ))}
